@@ -1,0 +1,5271 @@
+Terminals unused in grammar
+
+   OPERADOR_DE_ASIGNACION
+   '~'
+   '!'
+
+
+Gramática
+
+    0 $accept: unidad_de_traduccion $end
+
+    1 unidad_de_traduccion: declaracion_externa
+    2                     | unidad_de_traduccion declaracion_externa
+
+    3 declaracion_externa: definicion_de_funcion
+    4                    | declaracion
+
+    5 definicion_de_funcion: especificadores_de_declaracion declarador lista_de_declaraciones proposicion_compuesta
+    6                      | especificadores_de_declaracion declarador proposicion_compuesta
+    7                      | declarador lista_de_declaraciones proposicion_compuesta
+    8                      | declarador proposicion_compuesta
+
+    9 declaracion: especificadores_de_declaracion lista_declaradores_init ';'
+   10            | especificadores_de_declaracion ';'
+
+   11 lista_de_declaraciones: declaracion
+   12                       | lista_de_declaraciones declaracion
+
+   13 especificadores_de_declaracion: especificador_de_categoria_de_almacenamiento opt_especificadores_de_declaracion
+   14                               | especificador_de_tipo opt_especificadores_de_declaracion
+   15                               | CALIFICADOR_DE_TIPO opt_especificadores_de_declaracion
+
+   16 especificador_de_categoria_de_almacenamiento: AUTO
+   17                                             | REGISTER
+   18                                             | STATIC
+   19                                             | EXTERN
+   20                                             | TYPEDEF
+
+   21 opt_especificadores_de_declaracion: especificadores_de_declaracion
+   22                                   | /* vacío */
+
+   23 especificador_de_tipo: TIPO_DE_DATO
+   24                      | especificador_estructura_o_union
+   25                      | especificador_enum
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION IDENTIFICADOR '{' lista_declaraciones_struct '}'
+   27                                 | STRUCT_O_UNION '{' lista_declaraciones_struct '}'
+   28                                 | STRUCT_O_UNION IDENTIFICADOR
+
+   29 lista_declaraciones_struct: declaracion_struct
+   30                           | lista_declaraciones_struct declaracion_struct
+
+   31 lista_declaradores_init: declarador_init
+   32                        | lista_declaradores_init ',' declarador_init
+
+   33 declarador_init: declarador
+   34                | declarador '=' inicializador
+
+   35 declaracion_struct: lista_calificador_especificador lista_declaradores_struct ';'
+
+   36 lista_calificador_especificador: especificador_de_tipo lista_calificador_especificador
+   37                                | especificador_de_tipo
+   38                                | CALIFICADOR_DE_TIPO lista_calificador_especificador
+   39                                | CALIFICADOR_DE_TIPO
+
+   40 lista_declaradores_struct: declarador_struct
+   41                          | lista_declaradores_struct ',' declarador_struct
+
+   42 declarador_struct: declarador
+
+   43 especificador_enum: ENUM IDENTIFICADOR '{' lista_de_enumerador '}'
+   44                   | ENUM '{' lista_de_enumerador '}'
+   45                   | ENUM IDENTIFICADOR
+
+   46 lista_de_enumerador: enumerador
+   47                    | lista_de_enumerador ',' enumerador
+
+   48 enumerador: IDENTIFICADOR
+   49           | IDENTIFICADOR '=' expresion_constante
+
+   50 declarador: apuntador declarador_directo
+   51           | declarador_directo
+
+   52 declarador_directo: IDENTIFICADOR
+   53                   | '(' declarador ')'
+   54                   | declarador_directo '[' expresion_constante ']'
+   55                   | declarador_directo '[' ']'
+   56                   | declarador_directo '(' lista_tipos_de_parametro ')'
+   57                   | declarador_directo '(' lista_de_identificadores ')'
+   58                   | declarador_directo '(' ')'
+
+   59 apuntador: '*' opt_lista_calificadores_de_tipo
+   60          | '*' opt_lista_calificadores_de_tipo apuntador
+
+   61 opt_lista_calificadores_de_tipo: lista_calificadores_de_tipo
+   62                                | /* vacío */
+
+   63 lista_calificadores_de_tipo: CALIFICADOR_DE_TIPO
+   64                            | lista_calificadores_de_tipo CALIFICADOR_DE_TIPO
+
+   65 lista_tipos_de_parametro: lista_de_parametros
+   66                         | lista_de_parametros ',' ELIPSIS
+
+   67 lista_de_parametros: declaracion_parametro
+   68                    | lista_de_parametros ',' declaracion_parametro
+
+   69 declaracion_parametro: especificadores_de_declaracion declarador
+   70                      | especificadores_de_declaracion declarador_abstracto
+   71                      | especificadores_de_declaracion
+
+   72 lista_de_identificadores: IDENTIFICADOR
+   73                         | lista_de_identificadores ',' IDENTIFICADOR
+
+   74 inicializador: expresion_de_asignacion
+   75              | '{' lista_de_inicializadores '}'
+   76              | '{' lista_de_inicializadores ',' '}'
+
+   77 lista_de_inicializadores: inicializador
+   78                         | lista_de_inicializadores ',' inicializador
+
+   79 nombre_de_tipo: lista_calificador_especificador declarador_abstracto
+   80               | lista_calificador_especificador
+
+   81 declarador_abstracto: apuntador
+   82                     | apuntador declarador_abstracto_directo
+   83                     | declarador_abstracto_directo
+
+   84 declarador_abstracto_directo: '(' declarador_abstracto ')'
+   85                             | declarador_abstracto_directo '[' expresion_constante ']'
+   86                             | '[' expresion_constante ']'
+   87                             | declarador_abstracto_directo '[' ']'
+   88                             | '[' ']'
+   89                             | declarador_abstracto_directo '(' lista_tipos_de_parametro ')'
+   90                             | '(' lista_tipos_de_parametro ')'
+   91                             | declarador_abstracto_directo '(' ')'
+   92                             | '(' ')'
+
+   93 proposicion: proposicion_etiquetada
+   94            | proposicion_expresion
+   95            | proposicion_compuesta
+   96            | proposicion_de_seleccion
+   97            | proposicion_de_iteracion
+   98            | proposicion_de_salto
+
+   99 proposicion_etiquetada: IDENTIFICADOR ':' proposicion
+  100                       | CASE expresion_constante ':' proposicion
+  101                       | DEFAULT ':' proposicion
+
+  102 proposicion_expresion: opt_expresion ';'
+
+  103 proposicion_compuesta: '{' lista_de_declaraciones lista_de_proposiciones '}'
+  104                      | '{' lista_de_proposiciones '}'
+  105                      | '{' lista_de_declaraciones '}'
+  106                      | '{' '}'
+
+  107 lista_de_proposiciones: proposicion
+  108                       | lista_de_proposiciones proposicion
+
+  109 proposicion_de_seleccion: IF '(' expresion ')' proposicion
+  110                         | IF '(' expresion ')' proposicion ELSE proposicion
+  111                         | SWITCH '(' expresion ')' proposicion
+
+  112 proposicion_de_iteracion: WHILE '(' expresion ')' proposicion
+  113                         | DO proposicion WHILE '(' expresion ')' ';'
+  114                         | FOR '(' opt_expresion ';' opt_expresion ';' opt_expresion ')' proposicion
+
+  115 opt_expresion: expresion
+  116              | /* vacío */
+
+  117 proposicion_de_salto: GOTO IDENTIFICADOR ';'
+  118                     | CONTINUE ';'
+  119                     | BREAK ';'
+  120                     | RETURN opt_expresion ';'
+
+  121 expresion: expresion_de_asignacion
+  122          | expresion ',' expresion_de_asignacion
+
+  123 expresion_de_asignacion: expresion_condicional
+  124                        | expresion_unaria '=' expresion_de_asignacion
+
+  125 expresion_condicional: expresion_logica_OR
+  126                      | expresion_logica_OR '?' expresion ':' expresion_condicional
+
+  127 expresion_constante: expresion_condicional
+
+  128 expresion_logica_OR: expresion_logica_AND
+  129                    | expresion_logica_OR OR expresion_logica_AND
+
+  130 expresion_logica_AND: expresion_OR_inclusivo
+  131                     | expresion_logica_AND AND expresion_OR_inclusivo
+
+  132 expresion_OR_inclusivo: expresion_OR_exclusivo
+  133                       | expresion_OR_inclusivo '|' expresion_OR_exclusivo
+
+  134 expresion_OR_exclusivo: expresion_AND
+  135                       | expresion_OR_exclusivo '^' expresion_AND
+
+  136 expresion_AND: expresion_de_igualdad
+  137              | expresion_AND '&' expresion_de_igualdad
+
+  138 expresion_de_igualdad: expresion_relacional
+  139                      | expresion_de_igualdad IGUALDAD expresion_relacional
+  140                      | expresion_de_igualdad DISTINTO expresion_relacional
+
+  141 expresion_relacional: expresion_de_corrimiento
+  142                     | expresion_relacional '<' expresion_de_corrimiento
+  143                     | expresion_relacional '>' expresion_de_corrimiento
+  144                     | expresion_relacional MENOR_IGUAL expresion_de_corrimiento
+  145                     | expresion_relacional MAYOR_IGUAL expresion_de_corrimiento
+
+  146 expresion_de_corrimiento: expresion_aditiva
+  147                         | expresion_de_corrimiento DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+  149 expresion_aditiva: expresion_multiplicativa
+  150                  | expresion_aditiva '+' expresion_multiplicativa
+  151                  | expresion_aditiva '-' expresion_multiplicativa
+
+  152 expresion_multiplicativa: expresion_cast
+  153                         | expresion_multiplicativa '*' expresion_cast
+  154                         | expresion_multiplicativa '/' expresion_cast
+  155                         | expresion_multiplicativa '%' expresion_cast
+
+  156 expresion_cast: expresion_unaria
+  157               | '(' nombre_de_tipo ')' expresion_cast
+
+  158 expresion_unaria: expresion_posfija
+  159                 | INCREMENTO expresion_unaria
+  160                 | DECREMENTO expresion_unaria
+  161                 | OPERADOR_UNARIO expresion_cast
+  162                 | SIZEOF expresion_unaria
+  163                 | SIZEOF '(' nombre_de_tipo ')'
+
+  164 expresion_posfija: expresion_primaria
+  165                  | expresion_posfija '[' expresion ']'
+  166                  | expresion_posfija '(' lista_de_expresiones_argumento ')'
+  167                  | expresion_posfija '(' ')'
+  168                  | expresion_posfija '.' IDENTIFICADOR
+  169                  | expresion_posfija APUNTA IDENTIFICADOR
+  170                  | expresion_posfija INCREMENTO
+  171                  | expresion_posfija DECREMENTO
+
+  172 expresion_primaria: IDENTIFICADOR
+  173                   | constante
+  174                   | CADENA
+  175                   | '(' expresion ')'
+
+  176 lista_de_expresiones_argumento: expresion_de_asignacion
+  177                               | lista_de_expresiones_argumento ',' expresion_de_asignacion
+
+  178 constante: CONSTANTE_ENTERA
+  179          | CONSTANTE_CARACTER
+  180          | CONSTANTE_FLOTANTE
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+'!' (33)
+'%' (37) 155
+'&' (38) 137
+'(' (40) 53 56 57 58 84 89 90 91 92 109 110 111 112 113 114 157 163
+    166 167 175
+')' (41) 53 56 57 58 84 89 90 91 92 109 110 111 112 113 114 157 163
+    166 167 175
+'*' (42) 59 60 153
+'+' (43) 150
+',' (44) 32 41 47 66 68 73 76 78 122 177
+'-' (45) 151
+'.' (46) 168
+'/' (47) 154
+':' (58) 99 100 101 126
+';' (59) 9 10 35 102 113 114 117 118 119 120
+'<' (60) 142
+'=' (61) 34 49 124
+'>' (62) 143
+'?' (63) 126
+'[' (91) 54 55 85 86 87 88 165
+']' (93) 54 55 85 86 87 88 165
+'^' (94) 135
+'{' (123) 26 27 43 44 75 76 103 104 105 106
+'|' (124) 133
+'}' (125) 26 27 43 44 75 76 103 104 105 106
+'~' (126)
+error (256)
+TIPO_DE_DATO (258) 23
+IDENTIFICADOR (259) 26 28 43 45 48 49 52 72 73 99 117 168 169 172
+CALIFICADOR_DE_TIPO (260) 15 38 39 63 64
+STRUCT_O_UNION (261) 26 27 28
+ENUM (262) 43 44 45
+ELIPSIS (263) 66
+CASE (264) 100
+DEFAULT (265) 101
+IF (266) 109 110
+SWITCH (267) 111
+ELSE (268) 110
+DO (269) 113
+WHILE (270) 112 113
+FOR (271) 114
+GOTO (272) 117
+CONTINUE (273) 118
+BREAK (274) 119
+RETURN (275) 120
+OPERADOR_DE_ASIGNACION (276)
+OR (277) 129
+AND (278) 131
+IGUALDAD (279) 139
+DISTINTO (280) 140
+MENOR_IGUAL (281) 144
+MAYOR_IGUAL (282) 145
+DESPLAZAMIENTO_A_DERECHA (283) 148
+DESPLAZAMIENTO_A_IZQUIERDA (284) 147
+INCREMENTO (285) 159 170
+DECREMENTO (286) 160 171
+SIZEOF (287) 162 163
+OPERADOR_UNARIO (288) 161
+APUNTA (289) 169
+CADENA (290) 174
+CONSTANTE_ENTERA (291) 178
+CONSTANTE_CARACTER (292) 179
+CONSTANTE_FLOTANTE (293) 180
+AUTO (294) 16
+REGISTER (295) 17
+STATIC (296) 18
+EXTERN (297) 19
+TYPEDEF (298) 20
+THEN (299)
+
+
+No terminales con las reglas donde aparecen
+
+$accept (69)
+    en la izquierda: 0
+unidad_de_traduccion (70)
+    en la izquierda: 1 2, en la derecha: 0 2
+declaracion_externa (71)
+    en la izquierda: 3 4, en la derecha: 1 2
+definicion_de_funcion (72)
+    en la izquierda: 5 6 7 8, en la derecha: 3
+declaracion (73)
+    en la izquierda: 9 10, en la derecha: 4 11 12
+lista_de_declaraciones (74)
+    en la izquierda: 11 12, en la derecha: 5 7 12 103 105
+especificadores_de_declaracion (75)
+    en la izquierda: 13 14 15, en la derecha: 5 6 9 10 21 69 70 71
+especificador_de_categoria_de_almacenamiento (76)
+    en la izquierda: 16 17 18 19 20, en la derecha: 13
+opt_especificadores_de_declaracion (77)
+    en la izquierda: 21 22, en la derecha: 13 14 15
+especificador_de_tipo (78)
+    en la izquierda: 23 24 25, en la derecha: 14 36 37
+especificador_estructura_o_union (79)
+    en la izquierda: 26 27 28, en la derecha: 24
+lista_declaraciones_struct (80)
+    en la izquierda: 29 30, en la derecha: 26 27 30
+lista_declaradores_init (81)
+    en la izquierda: 31 32, en la derecha: 9 32
+declarador_init (82)
+    en la izquierda: 33 34, en la derecha: 31 32
+declaracion_struct (83)
+    en la izquierda: 35, en la derecha: 29 30
+lista_calificador_especificador (84)
+    en la izquierda: 36 37 38 39, en la derecha: 35 36 38 79 80
+lista_declaradores_struct (85)
+    en la izquierda: 40 41, en la derecha: 35 41
+declarador_struct (86)
+    en la izquierda: 42, en la derecha: 40 41
+especificador_enum (87)
+    en la izquierda: 43 44 45, en la derecha: 25
+lista_de_enumerador (88)
+    en la izquierda: 46 47, en la derecha: 43 44 47
+enumerador (89)
+    en la izquierda: 48 49, en la derecha: 46 47
+declarador (90)
+    en la izquierda: 50 51, en la derecha: 5 6 7 8 33 34 42 53 69
+declarador_directo (91)
+    en la izquierda: 52 53 54 55 56 57 58, en la derecha: 50 51 54
+    55 56 57 58
+apuntador (92)
+    en la izquierda: 59 60, en la derecha: 50 60 81 82
+opt_lista_calificadores_de_tipo (93)
+    en la izquierda: 61 62, en la derecha: 59 60
+lista_calificadores_de_tipo (94)
+    en la izquierda: 63 64, en la derecha: 61 64
+lista_tipos_de_parametro (95)
+    en la izquierda: 65 66, en la derecha: 56 89 90
+lista_de_parametros (96)
+    en la izquierda: 67 68, en la derecha: 65 66 68
+declaracion_parametro (97)
+    en la izquierda: 69 70 71, en la derecha: 67 68
+lista_de_identificadores (98)
+    en la izquierda: 72 73, en la derecha: 57 73
+inicializador (99)
+    en la izquierda: 74 75 76, en la derecha: 34 77 78
+lista_de_inicializadores (100)
+    en la izquierda: 77 78, en la derecha: 75 76 78
+nombre_de_tipo (101)
+    en la izquierda: 79 80, en la derecha: 157 163
+declarador_abstracto (102)
+    en la izquierda: 81 82 83, en la derecha: 70 79 84
+declarador_abstracto_directo (103)
+    en la izquierda: 84 85 86 87 88 89 90 91 92, en la derecha: 82
+    83 85 87 89 91
+proposicion (104)
+    en la izquierda: 93 94 95 96 97 98, en la derecha: 99 100 101 107
+    108 109 110 111 112 113 114
+proposicion_etiquetada (105)
+    en la izquierda: 99 100 101, en la derecha: 93
+proposicion_expresion (106)
+    en la izquierda: 102, en la derecha: 94
+proposicion_compuesta (107)
+    en la izquierda: 103 104 105 106, en la derecha: 5 6 7 8 95
+lista_de_proposiciones (108)
+    en la izquierda: 107 108, en la derecha: 103 104 108
+proposicion_de_seleccion (109)
+    en la izquierda: 109 110 111, en la derecha: 96
+proposicion_de_iteracion (110)
+    en la izquierda: 112 113 114, en la derecha: 97
+opt_expresion (111)
+    en la izquierda: 115 116, en la derecha: 102 114 120
+proposicion_de_salto (112)
+    en la izquierda: 117 118 119 120, en la derecha: 98
+expresion (113)
+    en la izquierda: 121 122, en la derecha: 109 110 111 112 113 115
+    122 126 165 175
+expresion_de_asignacion (114)
+    en la izquierda: 123 124, en la derecha: 74 121 122 124 176 177
+expresion_condicional (115)
+    en la izquierda: 125 126, en la derecha: 123 126 127
+expresion_constante (116)
+    en la izquierda: 127, en la derecha: 49 54 85 86 100
+expresion_logica_OR (117)
+    en la izquierda: 128 129, en la derecha: 125 126 129
+expresion_logica_AND (118)
+    en la izquierda: 130 131, en la derecha: 128 129 131
+expresion_OR_inclusivo (119)
+    en la izquierda: 132 133, en la derecha: 130 131 133
+expresion_OR_exclusivo (120)
+    en la izquierda: 134 135, en la derecha: 132 133 135
+expresion_AND (121)
+    en la izquierda: 136 137, en la derecha: 134 135 137
+expresion_de_igualdad (122)
+    en la izquierda: 138 139 140, en la derecha: 136 137 139 140
+expresion_relacional (123)
+    en la izquierda: 141 142 143 144 145, en la derecha: 138 139 140
+    142 143 144 145
+expresion_de_corrimiento (124)
+    en la izquierda: 146 147 148, en la derecha: 141 142 143 144 145
+    147 148
+expresion_aditiva (125)
+    en la izquierda: 149 150 151, en la derecha: 146 147 148 150 151
+expresion_multiplicativa (126)
+    en la izquierda: 152 153 154 155, en la derecha: 149 150 151 153
+    154 155
+expresion_cast (127)
+    en la izquierda: 156 157, en la derecha: 152 153 154 155 157 161
+expresion_unaria (128)
+    en la izquierda: 158 159 160 161 162 163, en la derecha: 124 156
+    159 160 162
+expresion_posfija (129)
+    en la izquierda: 164 165 166 167 168 169 170 171, en la derecha:
+    158 165 166 167 168 169 170 171
+expresion_primaria (130)
+    en la izquierda: 172 173 174 175, en la derecha: 164
+lista_de_expresiones_argumento (131)
+    en la izquierda: 176 177, en la derecha: 166 177
+constante (132)
+    en la izquierda: 178 179 180, en la derecha: 173
+
+
+estado 0
+
+    0 $accept: . unidad_de_traduccion $end
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 2
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '*'                  desplazar e ir al estado 11
+    '('                  desplazar e ir al estado 12
+
+    unidad_de_traduccion                          ir al estado 13
+    declaracion_externa                           ir al estado 14
+    definicion_de_funcion                         ir al estado 15
+    declaracion                                   ir al estado 16
+    especificadores_de_declaracion                ir al estado 17
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    declarador                                    ir al estado 22
+    declarador_directo                            ir al estado 23
+    apuntador                                     ir al estado 24
+
+
+estado 1
+
+   23 especificador_de_tipo: TIPO_DE_DATO .
+
+    $default  reduce usando la regla 23 (especificador_de_tipo)
+
+
+estado 2
+
+   52 declarador_directo: IDENTIFICADOR .
+
+    $default  reduce usando la regla 52 (declarador_directo)
+
+
+estado 3
+
+   15 especificadores_de_declaracion: CALIFICADOR_DE_TIPO . opt_especificadores_de_declaracion
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+
+    $default  reduce usando la regla 22 (opt_especificadores_de_declaracion)
+
+    especificadores_de_declaracion                ir al estado 25
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    opt_especificadores_de_declaracion            ir al estado 26
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+
+
+estado 4
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION . IDENTIFICADOR '{' lista_declaraciones_struct '}'
+   27                                 | STRUCT_O_UNION . '{' lista_declaraciones_struct '}'
+   28                                 | STRUCT_O_UNION . IDENTIFICADOR
+
+    IDENTIFICADOR  desplazar e ir al estado 27
+    '{'            desplazar e ir al estado 28
+
+
+estado 5
+
+   43 especificador_enum: ENUM . IDENTIFICADOR '{' lista_de_enumerador '}'
+   44                   | ENUM . '{' lista_de_enumerador '}'
+   45                   | ENUM . IDENTIFICADOR
+
+    IDENTIFICADOR  desplazar e ir al estado 29
+    '{'            desplazar e ir al estado 30
+
+
+estado 6
+
+   16 especificador_de_categoria_de_almacenamiento: AUTO .
+
+    $default  reduce usando la regla 16 (especificador_de_categoria_de_almacenamiento)
+
+
+estado 7
+
+   17 especificador_de_categoria_de_almacenamiento: REGISTER .
+
+    $default  reduce usando la regla 17 (especificador_de_categoria_de_almacenamiento)
+
+
+estado 8
+
+   18 especificador_de_categoria_de_almacenamiento: STATIC .
+
+    $default  reduce usando la regla 18 (especificador_de_categoria_de_almacenamiento)
+
+
+estado 9
+
+   19 especificador_de_categoria_de_almacenamiento: EXTERN .
+
+    $default  reduce usando la regla 19 (especificador_de_categoria_de_almacenamiento)
+
+
+estado 10
+
+   20 especificador_de_categoria_de_almacenamiento: TYPEDEF .
+
+    $default  reduce usando la regla 20 (especificador_de_categoria_de_almacenamiento)
+
+
+estado 11
+
+   59 apuntador: '*' . opt_lista_calificadores_de_tipo
+   60          | '*' . opt_lista_calificadores_de_tipo apuntador
+
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 31
+
+    $default  reduce usando la regla 62 (opt_lista_calificadores_de_tipo)
+
+    opt_lista_calificadores_de_tipo  ir al estado 32
+    lista_calificadores_de_tipo      ir al estado 33
+
+
+estado 12
+
+   53 declarador_directo: '(' . declarador ')'
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+
+    declarador          ir al estado 34
+    declarador_directo  ir al estado 23
+    apuntador           ir al estado 24
+
+
+estado 13
+
+    0 $accept: unidad_de_traduccion . $end
+    2 unidad_de_traduccion: unidad_de_traduccion . declaracion_externa
+
+    $end                 desplazar e ir al estado 35
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 2
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '*'                  desplazar e ir al estado 11
+    '('                  desplazar e ir al estado 12
+
+    declaracion_externa                           ir al estado 36
+    definicion_de_funcion                         ir al estado 15
+    declaracion                                   ir al estado 16
+    especificadores_de_declaracion                ir al estado 17
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    declarador                                    ir al estado 22
+    declarador_directo                            ir al estado 23
+    apuntador                                     ir al estado 24
+
+
+estado 14
+
+    1 unidad_de_traduccion: declaracion_externa .
+
+    $default  reduce usando la regla 1 (unidad_de_traduccion)
+
+
+estado 15
+
+    3 declaracion_externa: definicion_de_funcion .
+
+    $default  reduce usando la regla 3 (declaracion_externa)
+
+
+estado 16
+
+    4 declaracion_externa: declaracion .
+
+    $default  reduce usando la regla 4 (declaracion_externa)
+
+
+estado 17
+
+    5 definicion_de_funcion: especificadores_de_declaracion . declarador lista_de_declaraciones proposicion_compuesta
+    6                      | especificadores_de_declaracion . declarador proposicion_compuesta
+    9 declaracion: especificadores_de_declaracion . lista_declaradores_init ';'
+   10            | especificadores_de_declaracion . ';'
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+    ';'            desplazar e ir al estado 37
+
+    lista_declaradores_init  ir al estado 38
+    declarador_init          ir al estado 39
+    declarador               ir al estado 40
+    declarador_directo       ir al estado 23
+    apuntador                ir al estado 24
+
+
+estado 18
+
+   13 especificadores_de_declaracion: especificador_de_categoria_de_almacenamiento . opt_especificadores_de_declaracion
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+
+    $default  reduce usando la regla 22 (opt_especificadores_de_declaracion)
+
+    especificadores_de_declaracion                ir al estado 25
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    opt_especificadores_de_declaracion            ir al estado 41
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+
+
+estado 19
+
+   14 especificadores_de_declaracion: especificador_de_tipo . opt_especificadores_de_declaracion
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+
+    $default  reduce usando la regla 22 (opt_especificadores_de_declaracion)
+
+    especificadores_de_declaracion                ir al estado 25
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    opt_especificadores_de_declaracion            ir al estado 42
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+
+
+estado 20
+
+   24 especificador_de_tipo: especificador_estructura_o_union .
+
+    $default  reduce usando la regla 24 (especificador_de_tipo)
+
+
+estado 21
+
+   25 especificador_de_tipo: especificador_enum .
+
+    $default  reduce usando la regla 25 (especificador_de_tipo)
+
+
+estado 22
+
+    7 definicion_de_funcion: declarador . lista_de_declaraciones proposicion_compuesta
+    8                      | declarador . proposicion_compuesta
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '{'                  desplazar e ir al estado 43
+
+    declaracion                                   ir al estado 44
+    lista_de_declaraciones                        ir al estado 45
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion_compuesta                         ir al estado 47
+
+
+estado 23
+
+   51 declarador: declarador_directo .
+   54 declarador_directo: declarador_directo . '[' expresion_constante ']'
+   55                   | declarador_directo . '[' ']'
+   56                   | declarador_directo . '(' lista_tipos_de_parametro ')'
+   57                   | declarador_directo . '(' lista_de_identificadores ')'
+   58                   | declarador_directo . '(' ')'
+
+    '('  desplazar e ir al estado 48
+    '['  desplazar e ir al estado 49
+
+    $default  reduce usando la regla 51 (declarador)
+
+
+estado 24
+
+   50 declarador: apuntador . declarador_directo
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '('            desplazar e ir al estado 12
+
+    declarador_directo  ir al estado 50
+
+
+estado 25
+
+   21 opt_especificadores_de_declaracion: especificadores_de_declaracion .
+
+    $default  reduce usando la regla 21 (opt_especificadores_de_declaracion)
+
+
+estado 26
+
+   15 especificadores_de_declaracion: CALIFICADOR_DE_TIPO opt_especificadores_de_declaracion .
+
+    $default  reduce usando la regla 15 (especificadores_de_declaracion)
+
+
+estado 27
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION IDENTIFICADOR . '{' lista_declaraciones_struct '}'
+   28                                 | STRUCT_O_UNION IDENTIFICADOR .
+
+    '{'  desplazar e ir al estado 51
+
+    $default  reduce usando la regla 28 (especificador_estructura_o_union)
+
+
+estado 28
+
+   27 especificador_estructura_o_union: STRUCT_O_UNION '{' . lista_declaraciones_struct '}'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_declaraciones_struct        ir al estado 54
+    declaracion_struct                ir al estado 55
+    lista_calificador_especificador   ir al estado 56
+    especificador_enum                ir al estado 21
+
+
+estado 29
+
+   43 especificador_enum: ENUM IDENTIFICADOR . '{' lista_de_enumerador '}'
+   45                   | ENUM IDENTIFICADOR .
+
+    '{'  desplazar e ir al estado 57
+
+    $default  reduce usando la regla 45 (especificador_enum)
+
+
+estado 30
+
+   44 especificador_enum: ENUM '{' . lista_de_enumerador '}'
+
+    IDENTIFICADOR  desplazar e ir al estado 58
+
+    lista_de_enumerador  ir al estado 59
+    enumerador           ir al estado 60
+
+
+estado 31
+
+   63 lista_calificadores_de_tipo: CALIFICADOR_DE_TIPO .
+
+    $default  reduce usando la regla 63 (lista_calificadores_de_tipo)
+
+
+estado 32
+
+   59 apuntador: '*' opt_lista_calificadores_de_tipo .
+   60          | '*' opt_lista_calificadores_de_tipo . apuntador
+
+    '*'  desplazar e ir al estado 11
+
+    $default  reduce usando la regla 59 (apuntador)
+
+    apuntador  ir al estado 61
+
+
+estado 33
+
+   61 opt_lista_calificadores_de_tipo: lista_calificadores_de_tipo .
+   64 lista_calificadores_de_tipo: lista_calificadores_de_tipo . CALIFICADOR_DE_TIPO
+
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 62
+
+    $default  reduce usando la regla 61 (opt_lista_calificadores_de_tipo)
+
+
+estado 34
+
+   53 declarador_directo: '(' declarador . ')'
+
+    ')'  desplazar e ir al estado 63
+
+
+estado 35
+
+    0 $accept: unidad_de_traduccion $end .
+
+    $default  aceptar
+
+
+estado 36
+
+    2 unidad_de_traduccion: unidad_de_traduccion declaracion_externa .
+
+    $default  reduce usando la regla 2 (unidad_de_traduccion)
+
+
+estado 37
+
+   10 declaracion: especificadores_de_declaracion ';' .
+
+    $default  reduce usando la regla 10 (declaracion)
+
+
+estado 38
+
+    9 declaracion: especificadores_de_declaracion lista_declaradores_init . ';'
+   32 lista_declaradores_init: lista_declaradores_init . ',' declarador_init
+
+    ';'  desplazar e ir al estado 64
+    ','  desplazar e ir al estado 65
+
+
+estado 39
+
+   31 lista_declaradores_init: declarador_init .
+
+    $default  reduce usando la regla 31 (lista_declaradores_init)
+
+
+estado 40
+
+    5 definicion_de_funcion: especificadores_de_declaracion declarador . lista_de_declaraciones proposicion_compuesta
+    6                      | especificadores_de_declaracion declarador . proposicion_compuesta
+   33 declarador_init: declarador .
+   34                | declarador . '=' inicializador
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '='                  desplazar e ir al estado 66
+    '{'                  desplazar e ir al estado 43
+
+    $default  reduce usando la regla 33 (declarador_init)
+
+    declaracion                                   ir al estado 44
+    lista_de_declaraciones                        ir al estado 67
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion_compuesta                         ir al estado 68
+
+
+estado 41
+
+   13 especificadores_de_declaracion: especificador_de_categoria_de_almacenamiento opt_especificadores_de_declaracion .
+
+    $default  reduce usando la regla 13 (especificadores_de_declaracion)
+
+
+estado 42
+
+   14 especificadores_de_declaracion: especificador_de_tipo opt_especificadores_de_declaracion .
+
+    $default  reduce usando la regla 14 (especificadores_de_declaracion)
+
+
+estado 43
+
+  103 proposicion_compuesta: '{' . lista_de_declaraciones lista_de_proposiciones '}'
+  104                      | '{' . lista_de_proposiciones '}'
+  105                      | '{' . lista_de_declaraciones '}'
+  106                      | '{' . '}'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 69
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    CASE                 desplazar e ir al estado 70
+    DEFAULT              desplazar e ir al estado 71
+    IF                   desplazar e ir al estado 72
+    SWITCH               desplazar e ir al estado 73
+    DO                   desplazar e ir al estado 74
+    WHILE                desplazar e ir al estado 75
+    FOR                  desplazar e ir al estado 76
+    GOTO                 desplazar e ir al estado 77
+    CONTINUE             desplazar e ir al estado 78
+    BREAK                desplazar e ir al estado 79
+    RETURN               desplazar e ir al estado 80
+    INCREMENTO           desplazar e ir al estado 81
+    DECREMENTO           desplazar e ir al estado 82
+    SIZEOF               desplazar e ir al estado 83
+    OPERADOR_UNARIO      desplazar e ir al estado 84
+    CADENA               desplazar e ir al estado 85
+    CONSTANTE_ENTERA     desplazar e ir al estado 86
+    CONSTANTE_CARACTER   desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE   desplazar e ir al estado 88
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '('                  desplazar e ir al estado 89
+    '{'                  desplazar e ir al estado 43
+    '}'                  desplazar e ir al estado 90
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    declaracion                                   ir al estado 44
+    lista_de_declaraciones                        ir al estado 91
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion                                   ir al estado 92
+    proposicion_etiquetada                        ir al estado 93
+    proposicion_expresion                         ir al estado 94
+    proposicion_compuesta                         ir al estado 95
+    lista_de_proposiciones                        ir al estado 96
+    proposicion_de_seleccion                      ir al estado 97
+    proposicion_de_iteracion                      ir al estado 98
+    opt_expresion                                 ir al estado 99
+    proposicion_de_salto                          ir al estado 100
+    expresion                                     ir al estado 101
+    expresion_de_asignacion                       ir al estado 102
+    expresion_condicional                         ir al estado 103
+    expresion_logica_OR                           ir al estado 104
+    expresion_logica_AND                          ir al estado 105
+    expresion_OR_inclusivo                        ir al estado 106
+    expresion_OR_exclusivo                        ir al estado 107
+    expresion_AND                                 ir al estado 108
+    expresion_de_igualdad                         ir al estado 109
+    expresion_relacional                          ir al estado 110
+    expresion_de_corrimiento                      ir al estado 111
+    expresion_aditiva                             ir al estado 112
+    expresion_multiplicativa                      ir al estado 113
+    expresion_cast                                ir al estado 114
+    expresion_unaria                              ir al estado 115
+    expresion_posfija                             ir al estado 116
+    expresion_primaria                            ir al estado 117
+    constante                                     ir al estado 118
+
+
+estado 44
+
+   11 lista_de_declaraciones: declaracion .
+
+    $default  reduce usando la regla 11 (lista_de_declaraciones)
+
+
+estado 45
+
+    7 definicion_de_funcion: declarador lista_de_declaraciones . proposicion_compuesta
+   12 lista_de_declaraciones: lista_de_declaraciones . declaracion
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '{'                  desplazar e ir al estado 43
+
+    declaracion                                   ir al estado 119
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion_compuesta                         ir al estado 120
+
+
+estado 46
+
+    9 declaracion: especificadores_de_declaracion . lista_declaradores_init ';'
+   10            | especificadores_de_declaracion . ';'
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+    ';'            desplazar e ir al estado 37
+
+    lista_declaradores_init  ir al estado 38
+    declarador_init          ir al estado 39
+    declarador               ir al estado 121
+    declarador_directo       ir al estado 23
+    apuntador                ir al estado 24
+
+
+estado 47
+
+    8 definicion_de_funcion: declarador proposicion_compuesta .
+
+    $default  reduce usando la regla 8 (definicion_de_funcion)
+
+
+estado 48
+
+   56 declarador_directo: declarador_directo '(' . lista_tipos_de_parametro ')'
+   57                   | declarador_directo '(' . lista_de_identificadores ')'
+   58                   | declarador_directo '(' . ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 122
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    ')'                  desplazar e ir al estado 123
+
+    especificadores_de_declaracion                ir al estado 124
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    lista_tipos_de_parametro                      ir al estado 125
+    lista_de_parametros                           ir al estado 126
+    declaracion_parametro                         ir al estado 127
+    lista_de_identificadores                      ir al estado 128
+
+
+estado 49
+
+   54 declarador_directo: declarador_directo '[' . expresion_constante ']'
+   55                   | declarador_directo '[' . ']'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    ']'                 desplazar e ir al estado 130
+
+    expresion_condicional     ir al estado 131
+    expresion_constante       ir al estado 132
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 50
+
+   50 declarador: apuntador declarador_directo .
+   54 declarador_directo: declarador_directo . '[' expresion_constante ']'
+   55                   | declarador_directo . '[' ']'
+   56                   | declarador_directo . '(' lista_tipos_de_parametro ')'
+   57                   | declarador_directo . '(' lista_de_identificadores ')'
+   58                   | declarador_directo . '(' ')'
+
+    '('  desplazar e ir al estado 48
+    '['  desplazar e ir al estado 49
+
+    $default  reduce usando la regla 50 (declarador)
+
+
+estado 51
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION IDENTIFICADOR '{' . lista_declaraciones_struct '}'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_declaraciones_struct        ir al estado 134
+    declaracion_struct                ir al estado 55
+    lista_calificador_especificador   ir al estado 56
+    especificador_enum                ir al estado 21
+
+
+estado 52
+
+   38 lista_calificador_especificador: CALIFICADOR_DE_TIPO . lista_calificador_especificador
+   39                                | CALIFICADOR_DE_TIPO .
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+
+    $default  reduce usando la regla 39 (lista_calificador_especificador)
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_calificador_especificador   ir al estado 135
+    especificador_enum                ir al estado 21
+
+
+estado 53
+
+   36 lista_calificador_especificador: especificador_de_tipo . lista_calificador_especificador
+   37                                | especificador_de_tipo .
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+
+    $default  reduce usando la regla 37 (lista_calificador_especificador)
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_calificador_especificador   ir al estado 136
+    especificador_enum                ir al estado 21
+
+
+estado 54
+
+   27 especificador_estructura_o_union: STRUCT_O_UNION '{' lista_declaraciones_struct . '}'
+   30 lista_declaraciones_struct: lista_declaraciones_struct . declaracion_struct
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    '}'                  desplazar e ir al estado 137
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    declaracion_struct                ir al estado 138
+    lista_calificador_especificador   ir al estado 56
+    especificador_enum                ir al estado 21
+
+
+estado 55
+
+   29 lista_declaraciones_struct: declaracion_struct .
+
+    $default  reduce usando la regla 29 (lista_declaraciones_struct)
+
+
+estado 56
+
+   35 declaracion_struct: lista_calificador_especificador . lista_declaradores_struct ';'
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+
+    lista_declaradores_struct  ir al estado 139
+    declarador_struct          ir al estado 140
+    declarador                 ir al estado 141
+    declarador_directo         ir al estado 23
+    apuntador                  ir al estado 24
+
+
+estado 57
+
+   43 especificador_enum: ENUM IDENTIFICADOR '{' . lista_de_enumerador '}'
+
+    IDENTIFICADOR  desplazar e ir al estado 58
+
+    lista_de_enumerador  ir al estado 142
+    enumerador           ir al estado 60
+
+
+estado 58
+
+   48 enumerador: IDENTIFICADOR .
+   49           | IDENTIFICADOR . '=' expresion_constante
+
+    '='  desplazar e ir al estado 143
+
+    $default  reduce usando la regla 48 (enumerador)
+
+
+estado 59
+
+   44 especificador_enum: ENUM '{' lista_de_enumerador . '}'
+   47 lista_de_enumerador: lista_de_enumerador . ',' enumerador
+
+    '}'  desplazar e ir al estado 144
+    ','  desplazar e ir al estado 145
+
+
+estado 60
+
+   46 lista_de_enumerador: enumerador .
+
+    $default  reduce usando la regla 46 (lista_de_enumerador)
+
+
+estado 61
+
+   60 apuntador: '*' opt_lista_calificadores_de_tipo apuntador .
+
+    $default  reduce usando la regla 60 (apuntador)
+
+
+estado 62
+
+   64 lista_calificadores_de_tipo: lista_calificadores_de_tipo CALIFICADOR_DE_TIPO .
+
+    $default  reduce usando la regla 64 (lista_calificadores_de_tipo)
+
+
+estado 63
+
+   53 declarador_directo: '(' declarador ')' .
+
+    $default  reduce usando la regla 53 (declarador_directo)
+
+
+estado 64
+
+    9 declaracion: especificadores_de_declaracion lista_declaradores_init ';' .
+
+    $default  reduce usando la regla 9 (declaracion)
+
+
+estado 65
+
+   32 lista_declaradores_init: lista_declaradores_init ',' . declarador_init
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+
+    declarador_init     ir al estado 146
+    declarador          ir al estado 121
+    declarador_directo  ir al estado 23
+    apuntador           ir al estado 24
+
+
+estado 66
+
+   34 declarador_init: declarador '=' . inicializador
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 147
+
+    inicializador             ir al estado 148
+    expresion_de_asignacion   ir al estado 149
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 67
+
+    5 definicion_de_funcion: especificadores_de_declaracion declarador lista_de_declaraciones . proposicion_compuesta
+   12 lista_de_declaraciones: lista_de_declaraciones . declaracion
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '{'                  desplazar e ir al estado 43
+
+    declaracion                                   ir al estado 119
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion_compuesta                         ir al estado 150
+
+
+estado 68
+
+    6 definicion_de_funcion: especificadores_de_declaracion declarador proposicion_compuesta .
+
+    $default  reduce usando la regla 6 (definicion_de_funcion)
+
+
+estado 69
+
+   99 proposicion_etiquetada: IDENTIFICADOR . ':' proposicion
+  172 expresion_primaria: IDENTIFICADOR .
+
+    ':'  desplazar e ir al estado 151
+
+    $default  reduce usando la regla 172 (expresion_primaria)
+
+
+estado 70
+
+  100 proposicion_etiquetada: CASE . expresion_constante ':' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_condicional     ir al estado 131
+    expresion_constante       ir al estado 152
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 71
+
+  101 proposicion_etiquetada: DEFAULT . ':' proposicion
+
+    ':'  desplazar e ir al estado 153
+
+
+estado 72
+
+  109 proposicion_de_seleccion: IF . '(' expresion ')' proposicion
+  110                         | IF . '(' expresion ')' proposicion ELSE proposicion
+
+    '('  desplazar e ir al estado 154
+
+
+estado 73
+
+  111 proposicion_de_seleccion: SWITCH . '(' expresion ')' proposicion
+
+    '('  desplazar e ir al estado 155
+
+
+estado 74
+
+  113 proposicion_de_iteracion: DO . proposicion WHILE '(' expresion ')' ';'
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 156
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 75
+
+  112 proposicion_de_iteracion: WHILE . '(' expresion ')' proposicion
+
+    '('  desplazar e ir al estado 157
+
+
+estado 76
+
+  114 proposicion_de_iteracion: FOR . '(' opt_expresion ';' opt_expresion ';' opt_expresion ')' proposicion
+
+    '('  desplazar e ir al estado 158
+
+
+estado 77
+
+  117 proposicion_de_salto: GOTO . IDENTIFICADOR ';'
+
+    IDENTIFICADOR  desplazar e ir al estado 159
+
+
+estado 78
+
+  118 proposicion_de_salto: CONTINUE . ';'
+
+    ';'  desplazar e ir al estado 160
+
+
+estado 79
+
+  119 proposicion_de_salto: BREAK . ';'
+
+    ';'  desplazar e ir al estado 161
+
+
+estado 80
+
+  120 proposicion_de_salto: RETURN . opt_expresion ';'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    opt_expresion             ir al estado 162
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 81
+
+  159 expresion_unaria: INCREMENTO . expresion_unaria
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 163
+
+    expresion_unaria    ir al estado 164
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 82
+
+  160 expresion_unaria: DECREMENTO . expresion_unaria
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 163
+
+    expresion_unaria    ir al estado 165
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 83
+
+  162 expresion_unaria: SIZEOF . expresion_unaria
+  163                 | SIZEOF . '(' nombre_de_tipo ')'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 166
+
+    expresion_unaria    ir al estado 167
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 84
+
+  161 expresion_unaria: OPERADOR_UNARIO . expresion_cast
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_cast      ir al estado 168
+    expresion_unaria    ir al estado 133
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 85
+
+  174 expresion_primaria: CADENA .
+
+    $default  reduce usando la regla 174 (expresion_primaria)
+
+
+estado 86
+
+  178 constante: CONSTANTE_ENTERA .
+
+    $default  reduce usando la regla 178 (constante)
+
+
+estado 87
+
+  179 constante: CONSTANTE_CARACTER .
+
+    $default  reduce usando la regla 179 (constante)
+
+
+estado 88
+
+  180 constante: CONSTANTE_FLOTANTE .
+
+    $default  reduce usando la regla 180 (constante)
+
+
+estado 89
+
+  157 expresion_cast: '(' . nombre_de_tipo ')' expresion_cast
+  175 expresion_primaria: '(' . expresion ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 129
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    INCREMENTO           desplazar e ir al estado 81
+    DECREMENTO           desplazar e ir al estado 82
+    SIZEOF               desplazar e ir al estado 83
+    OPERADOR_UNARIO      desplazar e ir al estado 84
+    CADENA               desplazar e ir al estado 85
+    CONSTANTE_ENTERA     desplazar e ir al estado 86
+    CONSTANTE_CARACTER   desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE   desplazar e ir al estado 88
+    '('                  desplazar e ir al estado 89
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_calificador_especificador   ir al estado 169
+    especificador_enum                ir al estado 21
+    nombre_de_tipo                    ir al estado 170
+    expresion                         ir al estado 171
+    expresion_de_asignacion           ir al estado 102
+    expresion_condicional             ir al estado 103
+    expresion_logica_OR               ir al estado 104
+    expresion_logica_AND              ir al estado 105
+    expresion_OR_inclusivo            ir al estado 106
+    expresion_OR_exclusivo            ir al estado 107
+    expresion_AND                     ir al estado 108
+    expresion_de_igualdad             ir al estado 109
+    expresion_relacional              ir al estado 110
+    expresion_de_corrimiento          ir al estado 111
+    expresion_aditiva                 ir al estado 112
+    expresion_multiplicativa          ir al estado 113
+    expresion_cast                    ir al estado 114
+    expresion_unaria                  ir al estado 115
+    expresion_posfija                 ir al estado 116
+    expresion_primaria                ir al estado 117
+    constante                         ir al estado 118
+
+
+estado 90
+
+  106 proposicion_compuesta: '{' '}' .
+
+    $default  reduce usando la regla 106 (proposicion_compuesta)
+
+
+estado 91
+
+   12 lista_de_declaraciones: lista_de_declaraciones . declaracion
+  103 proposicion_compuesta: '{' lista_de_declaraciones . lista_de_proposiciones '}'
+  105                      | '{' lista_de_declaraciones . '}'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 69
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    CASE                 desplazar e ir al estado 70
+    DEFAULT              desplazar e ir al estado 71
+    IF                   desplazar e ir al estado 72
+    SWITCH               desplazar e ir al estado 73
+    DO                   desplazar e ir al estado 74
+    WHILE                desplazar e ir al estado 75
+    FOR                  desplazar e ir al estado 76
+    GOTO                 desplazar e ir al estado 77
+    CONTINUE             desplazar e ir al estado 78
+    BREAK                desplazar e ir al estado 79
+    RETURN               desplazar e ir al estado 80
+    INCREMENTO           desplazar e ir al estado 81
+    DECREMENTO           desplazar e ir al estado 82
+    SIZEOF               desplazar e ir al estado 83
+    OPERADOR_UNARIO      desplazar e ir al estado 84
+    CADENA               desplazar e ir al estado 85
+    CONSTANTE_ENTERA     desplazar e ir al estado 86
+    CONSTANTE_CARACTER   desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE   desplazar e ir al estado 88
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '('                  desplazar e ir al estado 89
+    '{'                  desplazar e ir al estado 43
+    '}'                  desplazar e ir al estado 172
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    declaracion                                   ir al estado 119
+    especificadores_de_declaracion                ir al estado 46
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    proposicion                                   ir al estado 92
+    proposicion_etiquetada                        ir al estado 93
+    proposicion_expresion                         ir al estado 94
+    proposicion_compuesta                         ir al estado 95
+    lista_de_proposiciones                        ir al estado 173
+    proposicion_de_seleccion                      ir al estado 97
+    proposicion_de_iteracion                      ir al estado 98
+    opt_expresion                                 ir al estado 99
+    proposicion_de_salto                          ir al estado 100
+    expresion                                     ir al estado 101
+    expresion_de_asignacion                       ir al estado 102
+    expresion_condicional                         ir al estado 103
+    expresion_logica_OR                           ir al estado 104
+    expresion_logica_AND                          ir al estado 105
+    expresion_OR_inclusivo                        ir al estado 106
+    expresion_OR_exclusivo                        ir al estado 107
+    expresion_AND                                 ir al estado 108
+    expresion_de_igualdad                         ir al estado 109
+    expresion_relacional                          ir al estado 110
+    expresion_de_corrimiento                      ir al estado 111
+    expresion_aditiva                             ir al estado 112
+    expresion_multiplicativa                      ir al estado 113
+    expresion_cast                                ir al estado 114
+    expresion_unaria                              ir al estado 115
+    expresion_posfija                             ir al estado 116
+    expresion_primaria                            ir al estado 117
+    constante                                     ir al estado 118
+
+
+estado 92
+
+  107 lista_de_proposiciones: proposicion .
+
+    $default  reduce usando la regla 107 (lista_de_proposiciones)
+
+
+estado 93
+
+   93 proposicion: proposicion_etiquetada .
+
+    $default  reduce usando la regla 93 (proposicion)
+
+
+estado 94
+
+   94 proposicion: proposicion_expresion .
+
+    $default  reduce usando la regla 94 (proposicion)
+
+
+estado 95
+
+   95 proposicion: proposicion_compuesta .
+
+    $default  reduce usando la regla 95 (proposicion)
+
+
+estado 96
+
+  104 proposicion_compuesta: '{' lista_de_proposiciones . '}'
+  108 lista_de_proposiciones: lista_de_proposiciones . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+    '}'                 desplazar e ir al estado 174
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 175
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 97
+
+   96 proposicion: proposicion_de_seleccion .
+
+    $default  reduce usando la regla 96 (proposicion)
+
+
+estado 98
+
+   97 proposicion: proposicion_de_iteracion .
+
+    $default  reduce usando la regla 97 (proposicion)
+
+
+estado 99
+
+  102 proposicion_expresion: opt_expresion . ';'
+
+    ';'  desplazar e ir al estado 176
+
+
+estado 100
+
+   98 proposicion: proposicion_de_salto .
+
+    $default  reduce usando la regla 98 (proposicion)
+
+
+estado 101
+
+  115 opt_expresion: expresion .
+  122 expresion: expresion . ',' expresion_de_asignacion
+
+    ','  desplazar e ir al estado 177
+
+    $default  reduce usando la regla 115 (opt_expresion)
+
+
+estado 102
+
+  121 expresion: expresion_de_asignacion .
+
+    $default  reduce usando la regla 121 (expresion)
+
+
+estado 103
+
+  123 expresion_de_asignacion: expresion_condicional .
+
+    $default  reduce usando la regla 123 (expresion_de_asignacion)
+
+
+estado 104
+
+  125 expresion_condicional: expresion_logica_OR .
+  126                      | expresion_logica_OR . '?' expresion ':' expresion_condicional
+  129 expresion_logica_OR: expresion_logica_OR . OR expresion_logica_AND
+
+    OR   desplazar e ir al estado 178
+    '?'  desplazar e ir al estado 179
+
+    $default  reduce usando la regla 125 (expresion_condicional)
+
+
+estado 105
+
+  128 expresion_logica_OR: expresion_logica_AND .
+  131 expresion_logica_AND: expresion_logica_AND . AND expresion_OR_inclusivo
+
+    AND  desplazar e ir al estado 180
+
+    $default  reduce usando la regla 128 (expresion_logica_OR)
+
+
+estado 106
+
+  130 expresion_logica_AND: expresion_OR_inclusivo .
+  133 expresion_OR_inclusivo: expresion_OR_inclusivo . '|' expresion_OR_exclusivo
+
+    '|'  desplazar e ir al estado 181
+
+    $default  reduce usando la regla 130 (expresion_logica_AND)
+
+
+estado 107
+
+  132 expresion_OR_inclusivo: expresion_OR_exclusivo .
+  135 expresion_OR_exclusivo: expresion_OR_exclusivo . '^' expresion_AND
+
+    '^'  desplazar e ir al estado 182
+
+    $default  reduce usando la regla 132 (expresion_OR_inclusivo)
+
+
+estado 108
+
+  134 expresion_OR_exclusivo: expresion_AND .
+  137 expresion_AND: expresion_AND . '&' expresion_de_igualdad
+
+    '&'  desplazar e ir al estado 183
+
+    $default  reduce usando la regla 134 (expresion_OR_exclusivo)
+
+
+estado 109
+
+  136 expresion_AND: expresion_de_igualdad .
+  139 expresion_de_igualdad: expresion_de_igualdad . IGUALDAD expresion_relacional
+  140                      | expresion_de_igualdad . DISTINTO expresion_relacional
+
+    IGUALDAD  desplazar e ir al estado 184
+    DISTINTO  desplazar e ir al estado 185
+
+    $default  reduce usando la regla 136 (expresion_AND)
+
+
+estado 110
+
+  138 expresion_de_igualdad: expresion_relacional .
+  142 expresion_relacional: expresion_relacional . '<' expresion_de_corrimiento
+  143                     | expresion_relacional . '>' expresion_de_corrimiento
+  144                     | expresion_relacional . MENOR_IGUAL expresion_de_corrimiento
+  145                     | expresion_relacional . MAYOR_IGUAL expresion_de_corrimiento
+
+    MENOR_IGUAL  desplazar e ir al estado 186
+    MAYOR_IGUAL  desplazar e ir al estado 187
+    '<'          desplazar e ir al estado 188
+    '>'          desplazar e ir al estado 189
+
+    $default  reduce usando la regla 138 (expresion_de_igualdad)
+
+
+estado 111
+
+  141 expresion_relacional: expresion_de_corrimiento .
+  147 expresion_de_corrimiento: expresion_de_corrimiento . DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento . DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+    DESPLAZAMIENTO_A_DERECHA    desplazar e ir al estado 190
+    DESPLAZAMIENTO_A_IZQUIERDA  desplazar e ir al estado 191
+
+    $default  reduce usando la regla 141 (expresion_relacional)
+
+
+estado 112
+
+  146 expresion_de_corrimiento: expresion_aditiva .
+  150 expresion_aditiva: expresion_aditiva . '+' expresion_multiplicativa
+  151                  | expresion_aditiva . '-' expresion_multiplicativa
+
+    '+'  desplazar e ir al estado 192
+    '-'  desplazar e ir al estado 193
+
+    $default  reduce usando la regla 146 (expresion_de_corrimiento)
+
+
+estado 113
+
+  149 expresion_aditiva: expresion_multiplicativa .
+  153 expresion_multiplicativa: expresion_multiplicativa . '*' expresion_cast
+  154                         | expresion_multiplicativa . '/' expresion_cast
+  155                         | expresion_multiplicativa . '%' expresion_cast
+
+    '*'  desplazar e ir al estado 194
+    '/'  desplazar e ir al estado 195
+    '%'  desplazar e ir al estado 196
+
+    $default  reduce usando la regla 149 (expresion_aditiva)
+
+
+estado 114
+
+  152 expresion_multiplicativa: expresion_cast .
+
+    $default  reduce usando la regla 152 (expresion_multiplicativa)
+
+
+estado 115
+
+  124 expresion_de_asignacion: expresion_unaria . '=' expresion_de_asignacion
+  156 expresion_cast: expresion_unaria .
+
+    '='  desplazar e ir al estado 197
+
+    $default  reduce usando la regla 156 (expresion_cast)
+
+
+estado 116
+
+  158 expresion_unaria: expresion_posfija .
+  165 expresion_posfija: expresion_posfija . '[' expresion ']'
+  166                  | expresion_posfija . '(' lista_de_expresiones_argumento ')'
+  167                  | expresion_posfija . '(' ')'
+  168                  | expresion_posfija . '.' IDENTIFICADOR
+  169                  | expresion_posfija . APUNTA IDENTIFICADOR
+  170                  | expresion_posfija . INCREMENTO
+  171                  | expresion_posfija . DECREMENTO
+
+    INCREMENTO  desplazar e ir al estado 198
+    DECREMENTO  desplazar e ir al estado 199
+    APUNTA      desplazar e ir al estado 200
+    '('         desplazar e ir al estado 201
+    '['         desplazar e ir al estado 202
+    '.'         desplazar e ir al estado 203
+
+    $default  reduce usando la regla 158 (expresion_unaria)
+
+
+estado 117
+
+  164 expresion_posfija: expresion_primaria .
+
+    $default  reduce usando la regla 164 (expresion_posfija)
+
+
+estado 118
+
+  173 expresion_primaria: constante .
+
+    $default  reduce usando la regla 173 (expresion_primaria)
+
+
+estado 119
+
+   12 lista_de_declaraciones: lista_de_declaraciones declaracion .
+
+    $default  reduce usando la regla 12 (lista_de_declaraciones)
+
+
+estado 120
+
+    7 definicion_de_funcion: declarador lista_de_declaraciones proposicion_compuesta .
+
+    $default  reduce usando la regla 7 (definicion_de_funcion)
+
+
+estado 121
+
+   33 declarador_init: declarador .
+   34                | declarador . '=' inicializador
+
+    '='  desplazar e ir al estado 66
+
+    $default  reduce usando la regla 33 (declarador_init)
+
+
+estado 122
+
+   72 lista_de_identificadores: IDENTIFICADOR .
+
+    $default  reduce usando la regla 72 (lista_de_identificadores)
+
+
+estado 123
+
+   58 declarador_directo: declarador_directo '(' ')' .
+
+    $default  reduce usando la regla 58 (declarador_directo)
+
+
+estado 124
+
+   69 declaracion_parametro: especificadores_de_declaracion . declarador
+   70                      | especificadores_de_declaracion . declarador_abstracto
+   71                      | especificadores_de_declaracion .
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 204
+    '['            desplazar e ir al estado 205
+
+    $default  reduce usando la regla 71 (declaracion_parametro)
+
+    declarador                    ir al estado 206
+    declarador_directo            ir al estado 23
+    apuntador                     ir al estado 207
+    declarador_abstracto          ir al estado 208
+    declarador_abstracto_directo  ir al estado 209
+
+
+estado 125
+
+   56 declarador_directo: declarador_directo '(' lista_tipos_de_parametro . ')'
+
+    ')'  desplazar e ir al estado 210
+
+
+estado 126
+
+   65 lista_tipos_de_parametro: lista_de_parametros .
+   66                         | lista_de_parametros . ',' ELIPSIS
+   68 lista_de_parametros: lista_de_parametros . ',' declaracion_parametro
+
+    ','  desplazar e ir al estado 211
+
+    $default  reduce usando la regla 65 (lista_tipos_de_parametro)
+
+
+estado 127
+
+   67 lista_de_parametros: declaracion_parametro .
+
+    $default  reduce usando la regla 67 (lista_de_parametros)
+
+
+estado 128
+
+   57 declarador_directo: declarador_directo '(' lista_de_identificadores . ')'
+   73 lista_de_identificadores: lista_de_identificadores . ',' IDENTIFICADOR
+
+    ')'  desplazar e ir al estado 212
+    ','  desplazar e ir al estado 213
+
+
+estado 129
+
+  172 expresion_primaria: IDENTIFICADOR .
+
+    $default  reduce usando la regla 172 (expresion_primaria)
+
+
+estado 130
+
+   55 declarador_directo: declarador_directo '[' ']' .
+
+    $default  reduce usando la regla 55 (declarador_directo)
+
+
+estado 131
+
+  127 expresion_constante: expresion_condicional .
+
+    $default  reduce usando la regla 127 (expresion_constante)
+
+
+estado 132
+
+   54 declarador_directo: declarador_directo '[' expresion_constante . ']'
+
+    ']'  desplazar e ir al estado 214
+
+
+estado 133
+
+  156 expresion_cast: expresion_unaria .
+
+    $default  reduce usando la regla 156 (expresion_cast)
+
+
+estado 134
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION IDENTIFICADOR '{' lista_declaraciones_struct . '}'
+   30 lista_declaraciones_struct: lista_declaraciones_struct . declaracion_struct
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    '}'                  desplazar e ir al estado 215
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    declaracion_struct                ir al estado 138
+    lista_calificador_especificador   ir al estado 56
+    especificador_enum                ir al estado 21
+
+
+estado 135
+
+   38 lista_calificador_especificador: CALIFICADOR_DE_TIPO lista_calificador_especificador .
+
+    $default  reduce usando la regla 38 (lista_calificador_especificador)
+
+
+estado 136
+
+   36 lista_calificador_especificador: especificador_de_tipo lista_calificador_especificador .
+
+    $default  reduce usando la regla 36 (lista_calificador_especificador)
+
+
+estado 137
+
+   27 especificador_estructura_o_union: STRUCT_O_UNION '{' lista_declaraciones_struct '}' .
+
+    $default  reduce usando la regla 27 (especificador_estructura_o_union)
+
+
+estado 138
+
+   30 lista_declaraciones_struct: lista_declaraciones_struct declaracion_struct .
+
+    $default  reduce usando la regla 30 (lista_declaraciones_struct)
+
+
+estado 139
+
+   35 declaracion_struct: lista_calificador_especificador lista_declaradores_struct . ';'
+   41 lista_declaradores_struct: lista_declaradores_struct . ',' declarador_struct
+
+    ';'  desplazar e ir al estado 216
+    ','  desplazar e ir al estado 217
+
+
+estado 140
+
+   40 lista_declaradores_struct: declarador_struct .
+
+    $default  reduce usando la regla 40 (lista_declaradores_struct)
+
+
+estado 141
+
+   42 declarador_struct: declarador .
+
+    $default  reduce usando la regla 42 (declarador_struct)
+
+
+estado 142
+
+   43 especificador_enum: ENUM IDENTIFICADOR '{' lista_de_enumerador . '}'
+   47 lista_de_enumerador: lista_de_enumerador . ',' enumerador
+
+    '}'  desplazar e ir al estado 218
+    ','  desplazar e ir al estado 145
+
+
+estado 143
+
+   49 enumerador: IDENTIFICADOR '=' . expresion_constante
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_condicional     ir al estado 131
+    expresion_constante       ir al estado 219
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 144
+
+   44 especificador_enum: ENUM '{' lista_de_enumerador '}' .
+
+    $default  reduce usando la regla 44 (especificador_enum)
+
+
+estado 145
+
+   47 lista_de_enumerador: lista_de_enumerador ',' . enumerador
+
+    IDENTIFICADOR  desplazar e ir al estado 58
+
+    enumerador  ir al estado 220
+
+
+estado 146
+
+   32 lista_declaradores_init: lista_declaradores_init ',' declarador_init .
+
+    $default  reduce usando la regla 32 (lista_declaradores_init)
+
+
+estado 147
+
+   75 inicializador: '{' . lista_de_inicializadores '}'
+   76              | '{' . lista_de_inicializadores ',' '}'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 147
+
+    inicializador             ir al estado 221
+    lista_de_inicializadores  ir al estado 222
+    expresion_de_asignacion   ir al estado 149
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 148
+
+   34 declarador_init: declarador '=' inicializador .
+
+    $default  reduce usando la regla 34 (declarador_init)
+
+
+estado 149
+
+   74 inicializador: expresion_de_asignacion .
+
+    $default  reduce usando la regla 74 (inicializador)
+
+
+estado 150
+
+    5 definicion_de_funcion: especificadores_de_declaracion declarador lista_de_declaraciones proposicion_compuesta .
+
+    $default  reduce usando la regla 5 (definicion_de_funcion)
+
+
+estado 151
+
+   99 proposicion_etiquetada: IDENTIFICADOR ':' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 223
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 152
+
+  100 proposicion_etiquetada: CASE expresion_constante . ':' proposicion
+
+    ':'  desplazar e ir al estado 224
+
+
+estado 153
+
+  101 proposicion_etiquetada: DEFAULT ':' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 225
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 154
+
+  109 proposicion_de_seleccion: IF '(' . expresion ')' proposicion
+  110                         | IF '(' . expresion ')' proposicion ELSE proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 226
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 155
+
+  111 proposicion_de_seleccion: SWITCH '(' . expresion ')' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 227
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 156
+
+  113 proposicion_de_iteracion: DO proposicion . WHILE '(' expresion ')' ';'
+
+    WHILE  desplazar e ir al estado 228
+
+
+estado 157
+
+  112 proposicion_de_iteracion: WHILE '(' . expresion ')' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 229
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 158
+
+  114 proposicion_de_iteracion: FOR '(' . opt_expresion ';' opt_expresion ';' opt_expresion ')' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    opt_expresion             ir al estado 230
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 159
+
+  117 proposicion_de_salto: GOTO IDENTIFICADOR . ';'
+
+    ';'  desplazar e ir al estado 231
+
+
+estado 160
+
+  118 proposicion_de_salto: CONTINUE ';' .
+
+    $default  reduce usando la regla 118 (proposicion_de_salto)
+
+
+estado 161
+
+  119 proposicion_de_salto: BREAK ';' .
+
+    $default  reduce usando la regla 119 (proposicion_de_salto)
+
+
+estado 162
+
+  120 proposicion_de_salto: RETURN opt_expresion . ';'
+
+    ';'  desplazar e ir al estado 232
+
+
+estado 163
+
+  175 expresion_primaria: '(' . expresion ')'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 171
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 164
+
+  159 expresion_unaria: INCREMENTO expresion_unaria .
+
+    $default  reduce usando la regla 159 (expresion_unaria)
+
+
+estado 165
+
+  160 expresion_unaria: DECREMENTO expresion_unaria .
+
+    $default  reduce usando la regla 160 (expresion_unaria)
+
+
+estado 166
+
+  163 expresion_unaria: SIZEOF '(' . nombre_de_tipo ')'
+  175 expresion_primaria: '(' . expresion ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 129
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 52
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    INCREMENTO           desplazar e ir al estado 81
+    DECREMENTO           desplazar e ir al estado 82
+    SIZEOF               desplazar e ir al estado 83
+    OPERADOR_UNARIO      desplazar e ir al estado 84
+    CADENA               desplazar e ir al estado 85
+    CONSTANTE_ENTERA     desplazar e ir al estado 86
+    CONSTANTE_CARACTER   desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE   desplazar e ir al estado 88
+    '('                  desplazar e ir al estado 89
+
+    especificador_de_tipo             ir al estado 53
+    especificador_estructura_o_union  ir al estado 20
+    lista_calificador_especificador   ir al estado 169
+    especificador_enum                ir al estado 21
+    nombre_de_tipo                    ir al estado 233
+    expresion                         ir al estado 171
+    expresion_de_asignacion           ir al estado 102
+    expresion_condicional             ir al estado 103
+    expresion_logica_OR               ir al estado 104
+    expresion_logica_AND              ir al estado 105
+    expresion_OR_inclusivo            ir al estado 106
+    expresion_OR_exclusivo            ir al estado 107
+    expresion_AND                     ir al estado 108
+    expresion_de_igualdad             ir al estado 109
+    expresion_relacional              ir al estado 110
+    expresion_de_corrimiento          ir al estado 111
+    expresion_aditiva                 ir al estado 112
+    expresion_multiplicativa          ir al estado 113
+    expresion_cast                    ir al estado 114
+    expresion_unaria                  ir al estado 115
+    expresion_posfija                 ir al estado 116
+    expresion_primaria                ir al estado 117
+    constante                         ir al estado 118
+
+
+estado 167
+
+  162 expresion_unaria: SIZEOF expresion_unaria .
+
+    $default  reduce usando la regla 162 (expresion_unaria)
+
+
+estado 168
+
+  161 expresion_unaria: OPERADOR_UNARIO expresion_cast .
+
+    $default  reduce usando la regla 161 (expresion_unaria)
+
+
+estado 169
+
+   79 nombre_de_tipo: lista_calificador_especificador . declarador_abstracto
+   80               | lista_calificador_especificador .
+
+    '*'  desplazar e ir al estado 11
+    '('  desplazar e ir al estado 234
+    '['  desplazar e ir al estado 205
+
+    $default  reduce usando la regla 80 (nombre_de_tipo)
+
+    apuntador                     ir al estado 235
+    declarador_abstracto          ir al estado 236
+    declarador_abstracto_directo  ir al estado 209
+
+
+estado 170
+
+  157 expresion_cast: '(' nombre_de_tipo . ')' expresion_cast
+
+    ')'  desplazar e ir al estado 237
+
+
+estado 171
+
+  122 expresion: expresion . ',' expresion_de_asignacion
+  175 expresion_primaria: '(' expresion . ')'
+
+    ')'  desplazar e ir al estado 238
+    ','  desplazar e ir al estado 177
+
+
+estado 172
+
+  105 proposicion_compuesta: '{' lista_de_declaraciones '}' .
+
+    $default  reduce usando la regla 105 (proposicion_compuesta)
+
+
+estado 173
+
+  103 proposicion_compuesta: '{' lista_de_declaraciones lista_de_proposiciones . '}'
+  108 lista_de_proposiciones: lista_de_proposiciones . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+    '}'                 desplazar e ir al estado 239
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 175
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 174
+
+  104 proposicion_compuesta: '{' lista_de_proposiciones '}' .
+
+    $default  reduce usando la regla 104 (proposicion_compuesta)
+
+
+estado 175
+
+  108 lista_de_proposiciones: lista_de_proposiciones proposicion .
+
+    $default  reduce usando la regla 108 (lista_de_proposiciones)
+
+
+estado 176
+
+  102 proposicion_expresion: opt_expresion ';' .
+
+    $default  reduce usando la regla 102 (proposicion_expresion)
+
+
+estado 177
+
+  122 expresion: expresion ',' . expresion_de_asignacion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_asignacion   ir al estado 240
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 178
+
+  129 expresion_logica_OR: expresion_logica_OR OR . expresion_logica_AND
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_logica_AND      ir al estado 241
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 179
+
+  126 expresion_condicional: expresion_logica_OR '?' . expresion ':' expresion_condicional
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 242
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 180
+
+  131 expresion_logica_AND: expresion_logica_AND AND . expresion_OR_inclusivo
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_OR_inclusivo    ir al estado 243
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 181
+
+  133 expresion_OR_inclusivo: expresion_OR_inclusivo '|' . expresion_OR_exclusivo
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_OR_exclusivo    ir al estado 244
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 182
+
+  135 expresion_OR_exclusivo: expresion_OR_exclusivo '^' . expresion_AND
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_AND             ir al estado 245
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 183
+
+  137 expresion_AND: expresion_AND '&' . expresion_de_igualdad
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_igualdad     ir al estado 246
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 184
+
+  139 expresion_de_igualdad: expresion_de_igualdad IGUALDAD . expresion_relacional
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_relacional      ir al estado 247
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 185
+
+  140 expresion_de_igualdad: expresion_de_igualdad DISTINTO . expresion_relacional
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_relacional      ir al estado 248
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 186
+
+  144 expresion_relacional: expresion_relacional MENOR_IGUAL . expresion_de_corrimiento
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_corrimiento  ir al estado 249
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 187
+
+  145 expresion_relacional: expresion_relacional MAYOR_IGUAL . expresion_de_corrimiento
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_corrimiento  ir al estado 250
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 188
+
+  142 expresion_relacional: expresion_relacional '<' . expresion_de_corrimiento
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_corrimiento  ir al estado 251
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 189
+
+  143 expresion_relacional: expresion_relacional '>' . expresion_de_corrimiento
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_corrimiento  ir al estado 252
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 190
+
+  148 expresion_de_corrimiento: expresion_de_corrimiento DESPLAZAMIENTO_A_DERECHA . expresion_aditiva
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_aditiva         ir al estado 253
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 191
+
+  147 expresion_de_corrimiento: expresion_de_corrimiento DESPLAZAMIENTO_A_IZQUIERDA . expresion_aditiva
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_aditiva         ir al estado 254
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 192
+
+  150 expresion_aditiva: expresion_aditiva '+' . expresion_multiplicativa
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_multiplicativa  ir al estado 255
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 193
+
+  151 expresion_aditiva: expresion_aditiva '-' . expresion_multiplicativa
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_multiplicativa  ir al estado 256
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 194
+
+  153 expresion_multiplicativa: expresion_multiplicativa '*' . expresion_cast
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_cast      ir al estado 257
+    expresion_unaria    ir al estado 133
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 195
+
+  154 expresion_multiplicativa: expresion_multiplicativa '/' . expresion_cast
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_cast      ir al estado 258
+    expresion_unaria    ir al estado 133
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 196
+
+  155 expresion_multiplicativa: expresion_multiplicativa '%' . expresion_cast
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_cast      ir al estado 259
+    expresion_unaria    ir al estado 133
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 197
+
+  124 expresion_de_asignacion: expresion_unaria '=' . expresion_de_asignacion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_asignacion   ir al estado 260
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 198
+
+  170 expresion_posfija: expresion_posfija INCREMENTO .
+
+    $default  reduce usando la regla 170 (expresion_posfija)
+
+
+estado 199
+
+  171 expresion_posfija: expresion_posfija DECREMENTO .
+
+    $default  reduce usando la regla 171 (expresion_posfija)
+
+
+estado 200
+
+  169 expresion_posfija: expresion_posfija APUNTA . IDENTIFICADOR
+
+    IDENTIFICADOR  desplazar e ir al estado 261
+
+
+estado 201
+
+  166 expresion_posfija: expresion_posfija '(' . lista_de_expresiones_argumento ')'
+  167                  | expresion_posfija '(' . ')'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    ')'                 desplazar e ir al estado 262
+
+    expresion_de_asignacion         ir al estado 263
+    expresion_condicional           ir al estado 103
+    expresion_logica_OR             ir al estado 104
+    expresion_logica_AND            ir al estado 105
+    expresion_OR_inclusivo          ir al estado 106
+    expresion_OR_exclusivo          ir al estado 107
+    expresion_AND                   ir al estado 108
+    expresion_de_igualdad           ir al estado 109
+    expresion_relacional            ir al estado 110
+    expresion_de_corrimiento        ir al estado 111
+    expresion_aditiva               ir al estado 112
+    expresion_multiplicativa        ir al estado 113
+    expresion_cast                  ir al estado 114
+    expresion_unaria                ir al estado 115
+    expresion_posfija               ir al estado 116
+    expresion_primaria              ir al estado 117
+    lista_de_expresiones_argumento  ir al estado 264
+    constante                       ir al estado 118
+
+
+estado 202
+
+  165 expresion_posfija: expresion_posfija '[' . expresion ']'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 265
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 203
+
+  168 expresion_posfija: expresion_posfija '.' . IDENTIFICADOR
+
+    IDENTIFICADOR  desplazar e ir al estado 266
+
+
+estado 204
+
+   53 declarador_directo: '(' . declarador ')'
+   84 declarador_abstracto_directo: '(' . declarador_abstracto ')'
+   90                             | '(' . lista_tipos_de_parametro ')'
+   92                             | '(' . ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    IDENTIFICADOR        desplazar e ir al estado 2
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '*'                  desplazar e ir al estado 11
+    '('                  desplazar e ir al estado 204
+    ')'                  desplazar e ir al estado 267
+    '['                  desplazar e ir al estado 205
+
+    especificadores_de_declaracion                ir al estado 124
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    declarador                                    ir al estado 34
+    declarador_directo                            ir al estado 23
+    apuntador                                     ir al estado 207
+    lista_tipos_de_parametro                      ir al estado 268
+    lista_de_parametros                           ir al estado 126
+    declaracion_parametro                         ir al estado 127
+    declarador_abstracto                          ir al estado 269
+    declarador_abstracto_directo                  ir al estado 209
+
+
+estado 205
+
+   86 declarador_abstracto_directo: '[' . expresion_constante ']'
+   88                             | '[' . ']'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    ']'                 desplazar e ir al estado 270
+
+    expresion_condicional     ir al estado 131
+    expresion_constante       ir al estado 271
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 206
+
+   69 declaracion_parametro: especificadores_de_declaracion declarador .
+
+    $default  reduce usando la regla 69 (declaracion_parametro)
+
+
+estado 207
+
+   50 declarador: apuntador . declarador_directo
+   81 declarador_abstracto: apuntador .
+   82                     | apuntador . declarador_abstracto_directo
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '('            desplazar e ir al estado 204
+    '['            desplazar e ir al estado 205
+
+    $default  reduce usando la regla 81 (declarador_abstracto)
+
+    declarador_directo            ir al estado 50
+    declarador_abstracto_directo  ir al estado 272
+
+
+estado 208
+
+   70 declaracion_parametro: especificadores_de_declaracion declarador_abstracto .
+
+    $default  reduce usando la regla 70 (declaracion_parametro)
+
+
+estado 209
+
+   83 declarador_abstracto: declarador_abstracto_directo .
+   85 declarador_abstracto_directo: declarador_abstracto_directo . '[' expresion_constante ']'
+   87                             | declarador_abstracto_directo . '[' ']'
+   89                             | declarador_abstracto_directo . '(' lista_tipos_de_parametro ')'
+   91                             | declarador_abstracto_directo . '(' ')'
+
+    '('  desplazar e ir al estado 273
+    '['  desplazar e ir al estado 274
+
+    $default  reduce usando la regla 83 (declarador_abstracto)
+
+
+estado 210
+
+   56 declarador_directo: declarador_directo '(' lista_tipos_de_parametro ')' .
+
+    $default  reduce usando la regla 56 (declarador_directo)
+
+
+estado 211
+
+   66 lista_tipos_de_parametro: lista_de_parametros ',' . ELIPSIS
+   68 lista_de_parametros: lista_de_parametros ',' . declaracion_parametro
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    ELIPSIS              desplazar e ir al estado 275
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+
+    especificadores_de_declaracion                ir al estado 124
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    declaracion_parametro                         ir al estado 276
+
+
+estado 212
+
+   57 declarador_directo: declarador_directo '(' lista_de_identificadores ')' .
+
+    $default  reduce usando la regla 57 (declarador_directo)
+
+
+estado 213
+
+   73 lista_de_identificadores: lista_de_identificadores ',' . IDENTIFICADOR
+
+    IDENTIFICADOR  desplazar e ir al estado 277
+
+
+estado 214
+
+   54 declarador_directo: declarador_directo '[' expresion_constante ']' .
+
+    $default  reduce usando la regla 54 (declarador_directo)
+
+
+estado 215
+
+   26 especificador_estructura_o_union: STRUCT_O_UNION IDENTIFICADOR '{' lista_declaraciones_struct '}' .
+
+    $default  reduce usando la regla 26 (especificador_estructura_o_union)
+
+
+estado 216
+
+   35 declaracion_struct: lista_calificador_especificador lista_declaradores_struct ';' .
+
+    $default  reduce usando la regla 35 (declaracion_struct)
+
+
+estado 217
+
+   41 lista_declaradores_struct: lista_declaradores_struct ',' . declarador_struct
+
+    IDENTIFICADOR  desplazar e ir al estado 2
+    '*'            desplazar e ir al estado 11
+    '('            desplazar e ir al estado 12
+
+    declarador_struct   ir al estado 278
+    declarador          ir al estado 141
+    declarador_directo  ir al estado 23
+    apuntador           ir al estado 24
+
+
+estado 218
+
+   43 especificador_enum: ENUM IDENTIFICADOR '{' lista_de_enumerador '}' .
+
+    $default  reduce usando la regla 43 (especificador_enum)
+
+
+estado 219
+
+   49 enumerador: IDENTIFICADOR '=' expresion_constante .
+
+    $default  reduce usando la regla 49 (enumerador)
+
+
+estado 220
+
+   47 lista_de_enumerador: lista_de_enumerador ',' enumerador .
+
+    $default  reduce usando la regla 47 (lista_de_enumerador)
+
+
+estado 221
+
+   77 lista_de_inicializadores: inicializador .
+
+    $default  reduce usando la regla 77 (lista_de_inicializadores)
+
+
+estado 222
+
+   75 inicializador: '{' lista_de_inicializadores . '}'
+   76              | '{' lista_de_inicializadores . ',' '}'
+   78 lista_de_inicializadores: lista_de_inicializadores . ',' inicializador
+
+    '}'  desplazar e ir al estado 279
+    ','  desplazar e ir al estado 280
+
+
+estado 223
+
+   99 proposicion_etiquetada: IDENTIFICADOR ':' proposicion .
+
+    $default  reduce usando la regla 99 (proposicion_etiquetada)
+
+
+estado 224
+
+  100 proposicion_etiquetada: CASE expresion_constante ':' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 281
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 225
+
+  101 proposicion_etiquetada: DEFAULT ':' proposicion .
+
+    $default  reduce usando la regla 101 (proposicion_etiquetada)
+
+
+estado 226
+
+  109 proposicion_de_seleccion: IF '(' expresion . ')' proposicion
+  110                         | IF '(' expresion . ')' proposicion ELSE proposicion
+  122 expresion: expresion . ',' expresion_de_asignacion
+
+    ')'  desplazar e ir al estado 282
+    ','  desplazar e ir al estado 177
+
+
+estado 227
+
+  111 proposicion_de_seleccion: SWITCH '(' expresion . ')' proposicion
+  122 expresion: expresion . ',' expresion_de_asignacion
+
+    ')'  desplazar e ir al estado 283
+    ','  desplazar e ir al estado 177
+
+
+estado 228
+
+  113 proposicion_de_iteracion: DO proposicion WHILE . '(' expresion ')' ';'
+
+    '('  desplazar e ir al estado 284
+
+
+estado 229
+
+  112 proposicion_de_iteracion: WHILE '(' expresion . ')' proposicion
+  122 expresion: expresion . ',' expresion_de_asignacion
+
+    ')'  desplazar e ir al estado 285
+    ','  desplazar e ir al estado 177
+
+
+estado 230
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion . ';' opt_expresion ';' opt_expresion ')' proposicion
+
+    ';'  desplazar e ir al estado 286
+
+
+estado 231
+
+  117 proposicion_de_salto: GOTO IDENTIFICADOR ';' .
+
+    $default  reduce usando la regla 117 (proposicion_de_salto)
+
+
+estado 232
+
+  120 proposicion_de_salto: RETURN opt_expresion ';' .
+
+    $default  reduce usando la regla 120 (proposicion_de_salto)
+
+
+estado 233
+
+  163 expresion_unaria: SIZEOF '(' nombre_de_tipo . ')'
+
+    ')'  desplazar e ir al estado 287
+
+
+estado 234
+
+   84 declarador_abstracto_directo: '(' . declarador_abstracto ')'
+   90                             | '(' . lista_tipos_de_parametro ')'
+   92                             | '(' . ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    '*'                  desplazar e ir al estado 11
+    '('                  desplazar e ir al estado 234
+    ')'                  desplazar e ir al estado 267
+    '['                  desplazar e ir al estado 205
+
+    especificadores_de_declaracion                ir al estado 124
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    apuntador                                     ir al estado 235
+    lista_tipos_de_parametro                      ir al estado 268
+    lista_de_parametros                           ir al estado 126
+    declaracion_parametro                         ir al estado 127
+    declarador_abstracto                          ir al estado 269
+    declarador_abstracto_directo                  ir al estado 209
+
+
+estado 235
+
+   81 declarador_abstracto: apuntador .
+   82                     | apuntador . declarador_abstracto_directo
+
+    '('  desplazar e ir al estado 234
+    '['  desplazar e ir al estado 205
+
+    $default  reduce usando la regla 81 (declarador_abstracto)
+
+    declarador_abstracto_directo  ir al estado 272
+
+
+estado 236
+
+   79 nombre_de_tipo: lista_calificador_especificador declarador_abstracto .
+
+    $default  reduce usando la regla 79 (nombre_de_tipo)
+
+
+estado 237
+
+  157 expresion_cast: '(' nombre_de_tipo ')' . expresion_cast
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_cast      ir al estado 288
+    expresion_unaria    ir al estado 133
+    expresion_posfija   ir al estado 116
+    expresion_primaria  ir al estado 117
+    constante           ir al estado 118
+
+
+estado 238
+
+  175 expresion_primaria: '(' expresion ')' .
+
+    $default  reduce usando la regla 175 (expresion_primaria)
+
+
+estado 239
+
+  103 proposicion_compuesta: '{' lista_de_declaraciones lista_de_proposiciones '}' .
+
+    $default  reduce usando la regla 103 (proposicion_compuesta)
+
+
+estado 240
+
+  122 expresion: expresion ',' expresion_de_asignacion .
+
+    $default  reduce usando la regla 122 (expresion)
+
+
+estado 241
+
+  129 expresion_logica_OR: expresion_logica_OR OR expresion_logica_AND .
+  131 expresion_logica_AND: expresion_logica_AND . AND expresion_OR_inclusivo
+
+    AND  desplazar e ir al estado 180
+
+    $default  reduce usando la regla 129 (expresion_logica_OR)
+
+
+estado 242
+
+  122 expresion: expresion . ',' expresion_de_asignacion
+  126 expresion_condicional: expresion_logica_OR '?' expresion . ':' expresion_condicional
+
+    ':'  desplazar e ir al estado 289
+    ','  desplazar e ir al estado 177
+
+
+estado 243
+
+  131 expresion_logica_AND: expresion_logica_AND AND expresion_OR_inclusivo .
+  133 expresion_OR_inclusivo: expresion_OR_inclusivo . '|' expresion_OR_exclusivo
+
+    '|'  desplazar e ir al estado 181
+
+    $default  reduce usando la regla 131 (expresion_logica_AND)
+
+
+estado 244
+
+  133 expresion_OR_inclusivo: expresion_OR_inclusivo '|' expresion_OR_exclusivo .
+  135 expresion_OR_exclusivo: expresion_OR_exclusivo . '^' expresion_AND
+
+    '^'  desplazar e ir al estado 182
+
+    $default  reduce usando la regla 133 (expresion_OR_inclusivo)
+
+
+estado 245
+
+  135 expresion_OR_exclusivo: expresion_OR_exclusivo '^' expresion_AND .
+  137 expresion_AND: expresion_AND . '&' expresion_de_igualdad
+
+    '&'  desplazar e ir al estado 183
+
+    $default  reduce usando la regla 135 (expresion_OR_exclusivo)
+
+
+estado 246
+
+  137 expresion_AND: expresion_AND '&' expresion_de_igualdad .
+  139 expresion_de_igualdad: expresion_de_igualdad . IGUALDAD expresion_relacional
+  140                      | expresion_de_igualdad . DISTINTO expresion_relacional
+
+    IGUALDAD  desplazar e ir al estado 184
+    DISTINTO  desplazar e ir al estado 185
+
+    $default  reduce usando la regla 137 (expresion_AND)
+
+
+estado 247
+
+  139 expresion_de_igualdad: expresion_de_igualdad IGUALDAD expresion_relacional .
+  142 expresion_relacional: expresion_relacional . '<' expresion_de_corrimiento
+  143                     | expresion_relacional . '>' expresion_de_corrimiento
+  144                     | expresion_relacional . MENOR_IGUAL expresion_de_corrimiento
+  145                     | expresion_relacional . MAYOR_IGUAL expresion_de_corrimiento
+
+    MENOR_IGUAL  desplazar e ir al estado 186
+    MAYOR_IGUAL  desplazar e ir al estado 187
+    '<'          desplazar e ir al estado 188
+    '>'          desplazar e ir al estado 189
+
+    $default  reduce usando la regla 139 (expresion_de_igualdad)
+
+
+estado 248
+
+  140 expresion_de_igualdad: expresion_de_igualdad DISTINTO expresion_relacional .
+  142 expresion_relacional: expresion_relacional . '<' expresion_de_corrimiento
+  143                     | expresion_relacional . '>' expresion_de_corrimiento
+  144                     | expresion_relacional . MENOR_IGUAL expresion_de_corrimiento
+  145                     | expresion_relacional . MAYOR_IGUAL expresion_de_corrimiento
+
+    MENOR_IGUAL  desplazar e ir al estado 186
+    MAYOR_IGUAL  desplazar e ir al estado 187
+    '<'          desplazar e ir al estado 188
+    '>'          desplazar e ir al estado 189
+
+    $default  reduce usando la regla 140 (expresion_de_igualdad)
+
+
+estado 249
+
+  144 expresion_relacional: expresion_relacional MENOR_IGUAL expresion_de_corrimiento .
+  147 expresion_de_corrimiento: expresion_de_corrimiento . DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento . DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+    DESPLAZAMIENTO_A_DERECHA    desplazar e ir al estado 190
+    DESPLAZAMIENTO_A_IZQUIERDA  desplazar e ir al estado 191
+
+    $default  reduce usando la regla 144 (expresion_relacional)
+
+
+estado 250
+
+  145 expresion_relacional: expresion_relacional MAYOR_IGUAL expresion_de_corrimiento .
+  147 expresion_de_corrimiento: expresion_de_corrimiento . DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento . DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+    DESPLAZAMIENTO_A_DERECHA    desplazar e ir al estado 190
+    DESPLAZAMIENTO_A_IZQUIERDA  desplazar e ir al estado 191
+
+    $default  reduce usando la regla 145 (expresion_relacional)
+
+
+estado 251
+
+  142 expresion_relacional: expresion_relacional '<' expresion_de_corrimiento .
+  147 expresion_de_corrimiento: expresion_de_corrimiento . DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento . DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+    DESPLAZAMIENTO_A_DERECHA    desplazar e ir al estado 190
+    DESPLAZAMIENTO_A_IZQUIERDA  desplazar e ir al estado 191
+
+    $default  reduce usando la regla 142 (expresion_relacional)
+
+
+estado 252
+
+  143 expresion_relacional: expresion_relacional '>' expresion_de_corrimiento .
+  147 expresion_de_corrimiento: expresion_de_corrimiento . DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva
+  148                         | expresion_de_corrimiento . DESPLAZAMIENTO_A_DERECHA expresion_aditiva
+
+    DESPLAZAMIENTO_A_DERECHA    desplazar e ir al estado 190
+    DESPLAZAMIENTO_A_IZQUIERDA  desplazar e ir al estado 191
+
+    $default  reduce usando la regla 143 (expresion_relacional)
+
+
+estado 253
+
+  148 expresion_de_corrimiento: expresion_de_corrimiento DESPLAZAMIENTO_A_DERECHA expresion_aditiva .
+  150 expresion_aditiva: expresion_aditiva . '+' expresion_multiplicativa
+  151                  | expresion_aditiva . '-' expresion_multiplicativa
+
+    '+'  desplazar e ir al estado 192
+    '-'  desplazar e ir al estado 193
+
+    $default  reduce usando la regla 148 (expresion_de_corrimiento)
+
+
+estado 254
+
+  147 expresion_de_corrimiento: expresion_de_corrimiento DESPLAZAMIENTO_A_IZQUIERDA expresion_aditiva .
+  150 expresion_aditiva: expresion_aditiva . '+' expresion_multiplicativa
+  151                  | expresion_aditiva . '-' expresion_multiplicativa
+
+    '+'  desplazar e ir al estado 192
+    '-'  desplazar e ir al estado 193
+
+    $default  reduce usando la regla 147 (expresion_de_corrimiento)
+
+
+estado 255
+
+  150 expresion_aditiva: expresion_aditiva '+' expresion_multiplicativa .
+  153 expresion_multiplicativa: expresion_multiplicativa . '*' expresion_cast
+  154                         | expresion_multiplicativa . '/' expresion_cast
+  155                         | expresion_multiplicativa . '%' expresion_cast
+
+    '*'  desplazar e ir al estado 194
+    '/'  desplazar e ir al estado 195
+    '%'  desplazar e ir al estado 196
+
+    $default  reduce usando la regla 150 (expresion_aditiva)
+
+
+estado 256
+
+  151 expresion_aditiva: expresion_aditiva '-' expresion_multiplicativa .
+  153 expresion_multiplicativa: expresion_multiplicativa . '*' expresion_cast
+  154                         | expresion_multiplicativa . '/' expresion_cast
+  155                         | expresion_multiplicativa . '%' expresion_cast
+
+    '*'  desplazar e ir al estado 194
+    '/'  desplazar e ir al estado 195
+    '%'  desplazar e ir al estado 196
+
+    $default  reduce usando la regla 151 (expresion_aditiva)
+
+
+estado 257
+
+  153 expresion_multiplicativa: expresion_multiplicativa '*' expresion_cast .
+
+    $default  reduce usando la regla 153 (expresion_multiplicativa)
+
+
+estado 258
+
+  154 expresion_multiplicativa: expresion_multiplicativa '/' expresion_cast .
+
+    $default  reduce usando la regla 154 (expresion_multiplicativa)
+
+
+estado 259
+
+  155 expresion_multiplicativa: expresion_multiplicativa '%' expresion_cast .
+
+    $default  reduce usando la regla 155 (expresion_multiplicativa)
+
+
+estado 260
+
+  124 expresion_de_asignacion: expresion_unaria '=' expresion_de_asignacion .
+
+    $default  reduce usando la regla 124 (expresion_de_asignacion)
+
+
+estado 261
+
+  169 expresion_posfija: expresion_posfija APUNTA IDENTIFICADOR .
+
+    $default  reduce usando la regla 169 (expresion_posfija)
+
+
+estado 262
+
+  167 expresion_posfija: expresion_posfija '(' ')' .
+
+    $default  reduce usando la regla 167 (expresion_posfija)
+
+
+estado 263
+
+  176 lista_de_expresiones_argumento: expresion_de_asignacion .
+
+    $default  reduce usando la regla 176 (lista_de_expresiones_argumento)
+
+
+estado 264
+
+  166 expresion_posfija: expresion_posfija '(' lista_de_expresiones_argumento . ')'
+  177 lista_de_expresiones_argumento: lista_de_expresiones_argumento . ',' expresion_de_asignacion
+
+    ')'  desplazar e ir al estado 290
+    ','  desplazar e ir al estado 291
+
+
+estado 265
+
+  122 expresion: expresion . ',' expresion_de_asignacion
+  165 expresion_posfija: expresion_posfija '[' expresion . ']'
+
+    ']'  desplazar e ir al estado 292
+    ','  desplazar e ir al estado 177
+
+
+estado 266
+
+  168 expresion_posfija: expresion_posfija '.' IDENTIFICADOR .
+
+    $default  reduce usando la regla 168 (expresion_posfija)
+
+
+estado 267
+
+   92 declarador_abstracto_directo: '(' ')' .
+
+    $default  reduce usando la regla 92 (declarador_abstracto_directo)
+
+
+estado 268
+
+   90 declarador_abstracto_directo: '(' lista_tipos_de_parametro . ')'
+
+    ')'  desplazar e ir al estado 293
+
+
+estado 269
+
+   84 declarador_abstracto_directo: '(' declarador_abstracto . ')'
+
+    ')'  desplazar e ir al estado 294
+
+
+estado 270
+
+   88 declarador_abstracto_directo: '[' ']' .
+
+    $default  reduce usando la regla 88 (declarador_abstracto_directo)
+
+
+estado 271
+
+   86 declarador_abstracto_directo: '[' expresion_constante . ']'
+
+    ']'  desplazar e ir al estado 295
+
+
+estado 272
+
+   82 declarador_abstracto: apuntador declarador_abstracto_directo .
+   85 declarador_abstracto_directo: declarador_abstracto_directo . '[' expresion_constante ']'
+   87                             | declarador_abstracto_directo . '[' ']'
+   89                             | declarador_abstracto_directo . '(' lista_tipos_de_parametro ')'
+   91                             | declarador_abstracto_directo . '(' ')'
+
+    '('  desplazar e ir al estado 273
+    '['  desplazar e ir al estado 274
+
+    $default  reduce usando la regla 82 (declarador_abstracto)
+
+
+estado 273
+
+   89 declarador_abstracto_directo: declarador_abstracto_directo '(' . lista_tipos_de_parametro ')'
+   91                             | declarador_abstracto_directo '(' . ')'
+
+    TIPO_DE_DATO         desplazar e ir al estado 1
+    CALIFICADOR_DE_TIPO  desplazar e ir al estado 3
+    STRUCT_O_UNION       desplazar e ir al estado 4
+    ENUM                 desplazar e ir al estado 5
+    AUTO                 desplazar e ir al estado 6
+    REGISTER             desplazar e ir al estado 7
+    STATIC               desplazar e ir al estado 8
+    EXTERN               desplazar e ir al estado 9
+    TYPEDEF              desplazar e ir al estado 10
+    ')'                  desplazar e ir al estado 296
+
+    especificadores_de_declaracion                ir al estado 124
+    especificador_de_categoria_de_almacenamiento  ir al estado 18
+    especificador_de_tipo                         ir al estado 19
+    especificador_estructura_o_union              ir al estado 20
+    especificador_enum                            ir al estado 21
+    lista_tipos_de_parametro                      ir al estado 297
+    lista_de_parametros                           ir al estado 126
+    declaracion_parametro                         ir al estado 127
+
+
+estado 274
+
+   85 declarador_abstracto_directo: declarador_abstracto_directo '[' . expresion_constante ']'
+   87                             | declarador_abstracto_directo '[' . ']'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    ']'                 desplazar e ir al estado 298
+
+    expresion_condicional     ir al estado 131
+    expresion_constante       ir al estado 299
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 275
+
+   66 lista_tipos_de_parametro: lista_de_parametros ',' ELIPSIS .
+
+    $default  reduce usando la regla 66 (lista_tipos_de_parametro)
+
+
+estado 276
+
+   68 lista_de_parametros: lista_de_parametros ',' declaracion_parametro .
+
+    $default  reduce usando la regla 68 (lista_de_parametros)
+
+
+estado 277
+
+   73 lista_de_identificadores: lista_de_identificadores ',' IDENTIFICADOR .
+
+    $default  reduce usando la regla 73 (lista_de_identificadores)
+
+
+estado 278
+
+   41 lista_declaradores_struct: lista_declaradores_struct ',' declarador_struct .
+
+    $default  reduce usando la regla 41 (lista_declaradores_struct)
+
+
+estado 279
+
+   75 inicializador: '{' lista_de_inicializadores '}' .
+
+    $default  reduce usando la regla 75 (inicializador)
+
+
+estado 280
+
+   76 inicializador: '{' lista_de_inicializadores ',' . '}'
+   78 lista_de_inicializadores: lista_de_inicializadores ',' . inicializador
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 147
+    '}'                 desplazar e ir al estado 300
+
+    inicializador             ir al estado 301
+    expresion_de_asignacion   ir al estado 149
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 281
+
+  100 proposicion_etiquetada: CASE expresion_constante ':' proposicion .
+
+    $default  reduce usando la regla 100 (proposicion_etiquetada)
+
+
+estado 282
+
+  109 proposicion_de_seleccion: IF '(' expresion ')' . proposicion
+  110                         | IF '(' expresion ')' . proposicion ELSE proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 302
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 283
+
+  111 proposicion_de_seleccion: SWITCH '(' expresion ')' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 303
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 284
+
+  113 proposicion_de_iteracion: DO proposicion WHILE '(' . expresion ')' ';'
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion                 ir al estado 304
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 285
+
+  112 proposicion_de_iteracion: WHILE '(' expresion ')' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 305
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 286
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' . opt_expresion ';' opt_expresion ')' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    opt_expresion             ir al estado 306
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 287
+
+  163 expresion_unaria: SIZEOF '(' nombre_de_tipo ')' .
+
+    $default  reduce usando la regla 163 (expresion_unaria)
+
+
+estado 288
+
+  157 expresion_cast: '(' nombre_de_tipo ')' expresion_cast .
+
+    $default  reduce usando la regla 157 (expresion_cast)
+
+
+estado 289
+
+  126 expresion_condicional: expresion_logica_OR '?' expresion ':' . expresion_condicional
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_condicional     ir al estado 307
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 133
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 290
+
+  166 expresion_posfija: expresion_posfija '(' lista_de_expresiones_argumento ')' .
+
+    $default  reduce usando la regla 166 (expresion_posfija)
+
+
+estado 291
+
+  177 lista_de_expresiones_argumento: lista_de_expresiones_argumento ',' . expresion_de_asignacion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    expresion_de_asignacion   ir al estado 308
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 292
+
+  165 expresion_posfija: expresion_posfija '[' expresion ']' .
+
+    $default  reduce usando la regla 165 (expresion_posfija)
+
+
+estado 293
+
+   90 declarador_abstracto_directo: '(' lista_tipos_de_parametro ')' .
+
+    $default  reduce usando la regla 90 (declarador_abstracto_directo)
+
+
+estado 294
+
+   84 declarador_abstracto_directo: '(' declarador_abstracto ')' .
+
+    $default  reduce usando la regla 84 (declarador_abstracto_directo)
+
+
+estado 295
+
+   86 declarador_abstracto_directo: '[' expresion_constante ']' .
+
+    $default  reduce usando la regla 86 (declarador_abstracto_directo)
+
+
+estado 296
+
+   91 declarador_abstracto_directo: declarador_abstracto_directo '(' ')' .
+
+    $default  reduce usando la regla 91 (declarador_abstracto_directo)
+
+
+estado 297
+
+   89 declarador_abstracto_directo: declarador_abstracto_directo '(' lista_tipos_de_parametro . ')'
+
+    ')'  desplazar e ir al estado 309
+
+
+estado 298
+
+   87 declarador_abstracto_directo: declarador_abstracto_directo '[' ']' .
+
+    $default  reduce usando la regla 87 (declarador_abstracto_directo)
+
+
+estado 299
+
+   85 declarador_abstracto_directo: declarador_abstracto_directo '[' expresion_constante . ']'
+
+    ']'  desplazar e ir al estado 310
+
+
+estado 300
+
+   76 inicializador: '{' lista_de_inicializadores ',' '}' .
+
+    $default  reduce usando la regla 76 (inicializador)
+
+
+estado 301
+
+   78 lista_de_inicializadores: lista_de_inicializadores ',' inicializador .
+
+    $default  reduce usando la regla 78 (lista_de_inicializadores)
+
+
+estado 302
+
+  109 proposicion_de_seleccion: IF '(' expresion ')' proposicion .
+  110                         | IF '(' expresion ')' proposicion . ELSE proposicion
+
+    ELSE  desplazar e ir al estado 311
+
+    $default  reduce usando la regla 109 (proposicion_de_seleccion)
+
+
+estado 303
+
+  111 proposicion_de_seleccion: SWITCH '(' expresion ')' proposicion .
+
+    $default  reduce usando la regla 111 (proposicion_de_seleccion)
+
+
+estado 304
+
+  113 proposicion_de_iteracion: DO proposicion WHILE '(' expresion . ')' ';'
+  122 expresion: expresion . ',' expresion_de_asignacion
+
+    ')'  desplazar e ir al estado 312
+    ','  desplazar e ir al estado 177
+
+
+estado 305
+
+  112 proposicion_de_iteracion: WHILE '(' expresion ')' proposicion .
+
+    $default  reduce usando la regla 112 (proposicion_de_iteracion)
+
+
+estado 306
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' opt_expresion . ';' opt_expresion ')' proposicion
+
+    ';'  desplazar e ir al estado 313
+
+
+estado 307
+
+  126 expresion_condicional: expresion_logica_OR '?' expresion ':' expresion_condicional .
+
+    $default  reduce usando la regla 126 (expresion_condicional)
+
+
+estado 308
+
+  177 lista_de_expresiones_argumento: lista_de_expresiones_argumento ',' expresion_de_asignacion .
+
+    $default  reduce usando la regla 177 (lista_de_expresiones_argumento)
+
+
+estado 309
+
+   89 declarador_abstracto_directo: declarador_abstracto_directo '(' lista_tipos_de_parametro ')' .
+
+    $default  reduce usando la regla 89 (declarador_abstracto_directo)
+
+
+estado 310
+
+   85 declarador_abstracto_directo: declarador_abstracto_directo '[' expresion_constante ']' .
+
+    $default  reduce usando la regla 85 (declarador_abstracto_directo)
+
+
+estado 311
+
+  110 proposicion_de_seleccion: IF '(' expresion ')' proposicion ELSE . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 314
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 312
+
+  113 proposicion_de_iteracion: DO proposicion WHILE '(' expresion ')' . ';'
+
+    ';'  desplazar e ir al estado 315
+
+
+estado 313
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' opt_expresion ';' . opt_expresion ')' proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 129
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    opt_expresion             ir al estado 316
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 314
+
+  110 proposicion_de_seleccion: IF '(' expresion ')' proposicion ELSE proposicion .
+
+    $default  reduce usando la regla 110 (proposicion_de_seleccion)
+
+
+estado 315
+
+  113 proposicion_de_iteracion: DO proposicion WHILE '(' expresion ')' ';' .
+
+    $default  reduce usando la regla 113 (proposicion_de_iteracion)
+
+
+estado 316
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' opt_expresion ';' opt_expresion . ')' proposicion
+
+    ')'  desplazar e ir al estado 317
+
+
+estado 317
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' opt_expresion ';' opt_expresion ')' . proposicion
+
+    IDENTIFICADOR       desplazar e ir al estado 69
+    CASE                desplazar e ir al estado 70
+    DEFAULT             desplazar e ir al estado 71
+    IF                  desplazar e ir al estado 72
+    SWITCH              desplazar e ir al estado 73
+    DO                  desplazar e ir al estado 74
+    WHILE               desplazar e ir al estado 75
+    FOR                 desplazar e ir al estado 76
+    GOTO                desplazar e ir al estado 77
+    CONTINUE            desplazar e ir al estado 78
+    BREAK               desplazar e ir al estado 79
+    RETURN              desplazar e ir al estado 80
+    INCREMENTO          desplazar e ir al estado 81
+    DECREMENTO          desplazar e ir al estado 82
+    SIZEOF              desplazar e ir al estado 83
+    OPERADOR_UNARIO     desplazar e ir al estado 84
+    CADENA              desplazar e ir al estado 85
+    CONSTANTE_ENTERA    desplazar e ir al estado 86
+    CONSTANTE_CARACTER  desplazar e ir al estado 87
+    CONSTANTE_FLOTANTE  desplazar e ir al estado 88
+    '('                 desplazar e ir al estado 89
+    '{'                 desplazar e ir al estado 43
+
+    $default  reduce usando la regla 116 (opt_expresion)
+
+    proposicion               ir al estado 318
+    proposicion_etiquetada    ir al estado 93
+    proposicion_expresion     ir al estado 94
+    proposicion_compuesta     ir al estado 95
+    proposicion_de_seleccion  ir al estado 97
+    proposicion_de_iteracion  ir al estado 98
+    opt_expresion             ir al estado 99
+    proposicion_de_salto      ir al estado 100
+    expresion                 ir al estado 101
+    expresion_de_asignacion   ir al estado 102
+    expresion_condicional     ir al estado 103
+    expresion_logica_OR       ir al estado 104
+    expresion_logica_AND      ir al estado 105
+    expresion_OR_inclusivo    ir al estado 106
+    expresion_OR_exclusivo    ir al estado 107
+    expresion_AND             ir al estado 108
+    expresion_de_igualdad     ir al estado 109
+    expresion_relacional      ir al estado 110
+    expresion_de_corrimiento  ir al estado 111
+    expresion_aditiva         ir al estado 112
+    expresion_multiplicativa  ir al estado 113
+    expresion_cast            ir al estado 114
+    expresion_unaria          ir al estado 115
+    expresion_posfija         ir al estado 116
+    expresion_primaria        ir al estado 117
+    constante                 ir al estado 118
+
+
+estado 318
+
+  114 proposicion_de_iteracion: FOR '(' opt_expresion ';' opt_expresion ';' opt_expresion ')' proposicion .
+
+    $default  reduce usando la regla 114 (proposicion_de_iteracion)
